@@ -1,0 +1,24 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo "Installing Nextcloud dependencies..."
+      - sudo snap install nextcloud
+      - sudo apt-get update -y
+      - sudo apt-get install -y jq # Install jq for JSON processing if needed in subsequent steps
+  build:
+    commands:
+      - echo "Configuring Nextcloud..."
+      - sudo nextcloud.manual-install $UNAME $PASSWORD # Replace $UNAME and $PASSWORD with your variables
+      - echo "Setting trusted domain..."
+      - sudo nextcloud.occ config:system:set trusted_domains 1 --value=$DOMAIN_NAME # Replace $DOMAIN_NAME with your variable
+      - echo "Verifying trusted domain..."
+      - sudo nextcloud.occ config:system:get trusted_domains
+  post_build:
+    commands:
+      - echo "Deployment complete."
+artifacts:
+  files:
+    - '**/*' # If you need to package any files for deployment
+  discard-paths: no
