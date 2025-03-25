@@ -3,10 +3,10 @@ resource "aws_vpc" "main" {
 }
 
 resource "aws_subnet" "public" {
-  count             = length(var.public_subnet_cidrs)
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = var.public_subnet_cidrs[count.index]
-  availability_zone = var.azs[count.index]
+  count                   = length(var.public_subnet_cidrs)
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.public_subnet_cidrs[count.index]
+  availability_zone       = var.azs[count.index]
   map_public_ip_on_launch = true
 
   tags = {
@@ -37,7 +37,7 @@ resource "aws_security_group" "allow_ssh" {
   vpc_id      = aws_vpc.main.id
   description = "Allow SSH inbound traffic"
 
-   ingress {
+  ingress {
     description = "HTTP from anywhere"
     from_port   = 80
     to_port     = 80
@@ -45,7 +45,7 @@ resource "aws_security_group" "allow_ssh" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-    ingress {
+  ingress {
     description = "HTTP from anywhere"
     from_port   = 8080
     to_port     = 8080
