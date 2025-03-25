@@ -1,1 +1,2 @@
-E2E-terraform-project/modules/VPC/.terraform.lock.hcl
+modules/VPC/.terraform.lock.hcl
+*.terraform*
