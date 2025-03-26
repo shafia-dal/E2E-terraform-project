@@ -1,6 +1,6 @@
 # main.tf
 module "vpc" {
-  source          = "/home/jayesh/E2E-terraform-project/modules/vpc"
+  source          = "../modules/vpc"
   vpc_name        = "my-custom-vpc" # Override the default vpc_name
   vpc_cidr        = "10.0.0.0/16"
   azs             = ["us-east-1a", "us-east-1b", "us-east-1c"] #Or use different AZs
