@@ -11,8 +11,8 @@ module "ec2" {
   source              = "../modules/ec2"
   ami_id              = "ami-0e35ddab05955cf57"
   instance_type       = "t3a.large"
-  subnet_id           = module.vpc.private_subnet
-  security_group_id   = module.vpc.security_group_id
+  subnet_id           = module.vpc.private_subnet.id
+  security_group_id   = module.vpc.e2e-server-sg.id
   instance_name       = "e2e-project-server"
 }
 
@@ -20,8 +20,8 @@ module "asg" {
   source              = "../modules/asg"
   ami_id              = "ami-0e35ddab05955cf57"
   instance_type       = "t3a.large"
-  security_group_id   = module.vpc.security_group_id
-  subnet_ids          = module.vpc.public_subnet_ids
+  security_group_id   = module.vpc.e2e-server-sgid
+  subnet_ids          = module.vpc.public_subnet.id
   min_size            = 1
   max_size            = 3
   desired_capacity    = 2
