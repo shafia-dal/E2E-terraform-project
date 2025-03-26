@@ -1,14 +1,5 @@
 variable "alb_name" {
-  description = "alb name"
-  type        = string
-  default     = "alb"
-  
-}
-
-variable "internal" {
-  description = "Whether the ALB is internal (true) or external (false)"
-  type        = bool
-  default     = false
+  type        = string  
 }
 
 variable "vpc_id" {
