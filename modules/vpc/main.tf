@@ -1,5 +1,5 @@
 # modules/vpc/main.tf
-resource "aws_vpc" "this" {
+resource "aws_vpc" "e2e-project-vpc" {
   cidr_block = var.vpc_cidr
   tags = {
     Name = var.vpc_name
@@ -8,7 +8,7 @@ resource "aws_vpc" "this" {
 
 resource "aws_subnet" "public" {
   count             = length(var.azs)
-  vpc_id            = aws_vpc.this.id
+  vpc_id            = aws_vpc.e2e-project-vpc.id
   cidr_block        = element(var.public_subnet_cidrs, count.index)
   availability_zone = element(var.azs, count.index)
   map_public_ip_on_launch = true # Important for public subnets
@@ -20,7 +20,7 @@ resource "aws_subnet" "public" {
 
 resource "aws_subnet" "private" {
   count             = length(var.azs)
-  vpc_id            = aws_vpc.this.id
+  vpc_id            = aws_vpc.e2e-project-vpc.id
   cidr_block        = element(var.private_subnet_cidrs, count.index)
   availability_zone = element(var.azs, count.index)
 
@@ -30,14 +30,14 @@ resource "aws_subnet" "private" {
 }
 
 resource "aws_internet_gateway" "igw" {
-  vpc_id = aws_vpc.this.id
+  vpc_id = aws_vpc.e2e-project-vpc.id
   tags = {
     Name = "${var.vpc_name}-igw"
   }
 }
 
 resource "aws_route_table" "public_rt" {
-  vpc_id = aws_vpc.this.id
+  vpc_id = aws_vpc.e2e-project-vpc.id
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.igw.id
@@ -55,7 +55,7 @@ resource "aws_route_table_association" "public_rta" {
 
 #  PrivateRouteTable
 resource "aws_route_table" "private_rt" {
-  vpc_id = aws_vpc.this.id
+  vpc_id = aws_vpc.e2e-project-vpc.id
     tags = {
     Name = "${var.vpc_name}-private-rt"
   }
