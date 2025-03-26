@@ -1,10 +1,9 @@
+# main.tf
 module "vpc" {
-  source               = "./modules/vpc"
-  vpc_cidr             = var.vpc_cidr
-  public_subnet_cidrs  = var.public_subnet_cidrs
-  private_subnet_cidrs = var.private_subnet_cidrs
-  availability_zones   = var.availability_zones
-  instance_type        = var.instance_type
-  ami                  = var.ami
-  key_name             = var.key_name
+  source          = "/home/jayesh/E2E-terraform-project/modules/vpc"
+  vpc_name        = "my-custom-vpc" # Override the default vpc_name
+  vpc_cidr        = "10.0.0.0/16"
+  azs             = ["us-east-1a", "us-east-1b", "us-east-1c"] #Or use different AZs
+  public_subnet_cidrs  = ["10.0.10.0/24", "10.0.20.0/24", "10.0.30.0/24"]
+  private_subnet_cidrs = ["10.0.110.0/24", "10.0.120.0/24", "10.0.130.0/24"]
 }
