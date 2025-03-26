@@ -48,7 +48,7 @@ resource "aws_route_table" "public_rt" {
 
 resource "aws_route_table_association" "public_rta" {
   count          = length(var.azs)
-  subnet_id      = element(aws_subnet.public, count.index).id
+  subnet_id      = element(aws_subnet.public_subnet, count.index).id
   route_table_id = aws_route_table.public_rt.id
 }
 
@@ -66,7 +66,6 @@ resource "aws_route_table_association" "private_rta" {
   route_table_id = aws_route_table.private_rt.id
 }
 
-
 #  NAT Gateway (Required for instances in the private subnets to access the internet) -  Important
 resource "aws_eip" "nat_gateway_eip" {
   count = length(var.azs) # One EIP for each NAT gateway
@@ -78,7 +77,7 @@ resource "aws_eip" "nat_gateway_eip" {
 resource "aws_nat_gateway" "nat_gateway" {
   count         = length(var.azs) # One NAT gateway for each AZ
   allocation_id = element(aws_eip.nat_gateway_eip, count.index).id
-  subnet_id     = element(aws_subnet.public, count.index).id # NATs reside in public subnets
+  subnet_id     = element(aws_subnet.public_subnet, count.index).id # NATs reside in public subnets
 
   tags = {
     Name = "${var.vpc_name}-nat-gateway-${element(var.azs, count.index)}"
@@ -90,45 +89,49 @@ resource "aws_nat_gateway" "nat_gateway" {
 resource "aws_route" "private_nat_gateway_route" {
   count          = length(var.azs)
   route_table_id = aws_route_table.private_rt.id
-  destination_cidr_block = "0.0.0.0/0"
+  destination_cidr_block = ""
   nat_gateway_id      = element(aws_nat_gateway.nat_gateway, count.index).id
 }
-###########################################################################3
 
+###########################################################################3
 resource "aws_security_group" "e2e-server-sg" {
-  name        = "allow_tls"
-  description = "Allow load balancer inbound traffic and all outbound traffic"
+  name        = var.security_group
+  description = "Security group for ec2 instance"
   vpc_id      = aws_vpc.e2e-project-vpc.id
 
-  tags = {
-    Name = "allow_tls"
+  # Inbound HTTP
+  ingress {
+    description = "HTTP from anywhere"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
-}
 
-resource "aws_vpc_security_group_ingress_rule" "allow_tls_ipv4" {
-  security_group_id = aws_security_group.e2e-server-sg.id
-  cidr_ipv4         = aws_vpc.e2e-project-vpc.cidr_block
-  from_port         = 443
-  ip_protocol       = "tcp"
-  to_port           = 443
-}
 
-resource "aws_vpc_security_group_ingress_rule" "allow_alb_traffic" {
-  security_group_id = aws_security_group.e2e-server-sg.id
-  cidr_ipv6         = aws_vpc.e2e-project-vpc.cidr_block
-  from_port         = 443
-  ip_protocol       = "tcp"
-  to_port           = 443
-}
+  # Inbound HTTPS
+  ingress {
+    description = "HTTPS from anywhere"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
-  security_group_id = aws_security_group.e2e-server-sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  ip_protocol       = "-1" # semantically equivalent to all ports
-}
+  # Inbound SSH
+  ingress {
+    description = "SSH from anywhere"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # For production, restrict to your IP
+  }
 
-resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv6" {
-  security_group_id = aws_security_group.e2e-server-sg.id
-  cidr_ipv6         = "::/0"
-  ip_protocol       = "-1" # semantically equivalent to all ports
+  # Outbound rules
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"  # Means all protocols
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
