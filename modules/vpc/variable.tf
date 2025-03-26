@@ -8,7 +8,7 @@ variable "cidr_block" {
   type        = string
 }
 
-variable "azs" {
+variable "availability_zones" {
   description = "A list of availability zones in which to create subnets."
   type        = list(string)
 }
