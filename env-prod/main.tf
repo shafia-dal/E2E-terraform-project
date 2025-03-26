@@ -11,8 +11,8 @@ module "ec2" {
   source              = "../modules/ec2"
   ami_id              = "ami-0e35ddab05955cf57"
   instance_type       = "t3a.large"
-  subnet_id           = module.vpc.private_subnet.id
-  security_group_id   = module.vpc.e2e-server-sg.id
+  subnet_id           = module.vpc.private_subnet[0]
+  security_group_id   = module.vpc.e2e-server-sg
   instance_name       = "e2e-project-server"
 }
 
