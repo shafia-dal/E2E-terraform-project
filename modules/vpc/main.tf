@@ -1,12 +1,12 @@
 # modules/vpc/main.tf
-resource "aws_vpc" "this" {
+resource "aws_vpc" "e2e-project-vpc" {
   cidr_block = var.vpc_cidr
   tags = {
     Name = var.vpc_name
   }
 }
 
-resource "aws_subnet" "public" {
+resource "aws_subnet" "public_subnet" {
   count             = length(var.azs)
   vpc_id            = aws_vpc.this.id
   cidr_block        = element(var.public_subnet_cidrs, count.index)
@@ -18,7 +18,7 @@ resource "aws_subnet" "public" {
   }
 }
 
-resource "aws_subnet" "private" {
+resource "aws_subnet" "private_subnet" {
   count             = length(var.azs)
   vpc_id            = aws_vpc.this.id
   cidr_block        = element(var.private_subnet_cidrs, count.index)
@@ -28,7 +28,6 @@ resource "aws_subnet" "private" {
     Name = "${var.vpc_name}-private-${element(var.azs, count.index)}"
   }
 }
-
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.this.id
   tags = {
@@ -93,4 +92,43 @@ resource "aws_route" "private_nat_gateway_route" {
   route_table_id = aws_route_table.private_rt.id
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id      = element(aws_nat_gateway.nat_gateway, count.index).id
+}
+###########################################################################3
+
+resource "aws_security_group" "e2e-server-sg" {
+  name        = "allow_tls"
+  description = "Allow load balancer inbound traffic and all outbound traffic"
+  vpc_id      = aws_vpc.e2e-project-vpc.id
+
+  tags = {
+    Name = "allow_tls"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_tls_ipv4" {
+  security_group_id = aws_security_group.e2e-server-sg.id
+  cidr_ipv4         = aws_vpc.e2e-project-vpc.cidr_block
+  from_port         = 443
+  ip_protocol       = "tcp"
+  to_port           = 443
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_alb_traffic" {
+  security_group_id = aws_security_group.e2e-server-sg.id
+  cidr_ipv6         = aws_vpc.e2e-project-vpc.cidr_block
+  from_port         = 443
+  ip_protocol       = "tcp"
+  to_port           = 443
+}
+
+resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
+  security_group_id = aws_security_group.allow_tls.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1" # semantically equivalent to all ports
+}
+
+resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv6" {
+  security_group_id = aws_security_group.allow_tls.id
+  cidr_ipv6         = "::/0"
+  ip_protocol       = "-1" # semantically equivalent to all ports
 }
