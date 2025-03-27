@@ -1,5 +1,6 @@
 variable "rds_sg" {
   type = string
+  default = "rds_sg"
 }
 
 variable "vpc_id" {
@@ -41,3 +42,4 @@ variable "username" {
 variable "db_password" {
   type = string
 }
+

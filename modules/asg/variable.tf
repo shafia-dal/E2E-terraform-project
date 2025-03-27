@@ -16,9 +16,6 @@ variable "min_size" {
 variable "max_size" {
     type = number
 }
-variable "desired_capacity" {
-    type = number
-}
 variable "instance_name" {
     type = string
 }

@@ -18,7 +18,6 @@ resource "aws_launch_template" "e2e-project-lt" {
 
 # Define Auto Scaling Group
 resource "aws_autoscaling_group" "e2e-project-asg" {
-  desired_capacity     = var.desired_capacity
   max_size             = var.max_size
   min_size             = var.min_size
   vpc_zone_identifier  = var.subnet_ids

@@ -70,7 +70,7 @@ resource "aws_db_subnet_group" "subnet_group" {
 resource "aws_db_instance" "rds" {
   storage_type           = "gp3" 
   identifier             = "rds"
-  instance_class         = var.instance_class
+  instance_class        = var.instance_class
   allocated_storage      = var.allocated_storage
   engine                 = var.engine
   engine_version         = var.engine_version
@@ -78,7 +78,7 @@ resource "aws_db_instance" "rds" {
   password               = var.db_password
   db_subnet_group_name   = aws_db_subnet_group.subnet_group.name
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
-  publicly_accessible    = true
+  publicly_accessible    = false
   skip_final_snapshot    = true
   
 }

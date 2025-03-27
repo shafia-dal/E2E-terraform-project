@@ -27,7 +27,6 @@ module "asg" {
   subnet_ids          = module.vpc.public_subnet_id
   min_size            = 1
   max_size            = 3
-  desired_capacity    = 1
   instance_name       = "e2e-project-server"
 }
 
@@ -46,16 +45,16 @@ output "alb_dns" {
 
 
 module "rds" {
-  source              = "/home/jayesh/E2E-terraform-project/modules/rds"
+  source              = "/home/ubuntu/E2E-terraform-project/modules/rds"
   vpc_id              = module.vpc.vpc_id
-  security_group_id   = module.vpc.security_group_id #ec2 security id
-  subnet_ids          = module.vpc.public_subnet_id
-  rds_name            = "e2e-project-rds"
-  rds_engine          = "mysql"
-  rds_engine_version  = "8.0.30"
-  rds_instance_class  = "db.t3.small"
-  rds_username        = "rds"
-  rds_password        = "password123"
-  rds_storage         = 20
-  rds_port            = 3306
+  rds_sg              = "rds_sg"
+  private_subnet_id   = module.vpc.private_subnet_id
+  engine              = "mysql"
+  engine_version      = "8.0.35"
+  instance_class      = "db.t3.medium"
+  username            = "rds"
+  db_password         = "password123"
+  allocated_storage   = 20
+  security_group_id = module.vpc.security_group_id
+
 }
