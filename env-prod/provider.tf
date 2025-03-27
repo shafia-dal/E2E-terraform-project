@@ -1,6 +1,6 @@
 provider "aws" {
   region  = "us-east-1"
-  profile = "default"
+  
 }
 terraform {
   required_providers {
@@ -9,6 +9,9 @@ terraform {
       version = "~> 4.16"
     }
   }
-
-  required_version = ">= 1.2.0"
+  backend "s3" {
+    bucket = "e2e-state-bucket"
+    key    = "terraform.tfstate"
+    region = "us-east-1"
+  }
 }
