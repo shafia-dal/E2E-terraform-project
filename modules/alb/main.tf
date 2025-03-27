@@ -45,12 +45,11 @@ resource "aws_security_group" "alb_sg" {
   }
 }
 resource "aws_lb" "alb_loadbalancer" {
-  name               = "alb-sg"
+  name               = "e2e-project-alb"
   internal           = false
   load_balancer_type = "application"
   subnets            = var.public_subnet_ids
-   security_groups    = [aws_security_group.alb_sg_id]
-
+  security_groups    = [var.alb_sg]
   tags = {
     Environment = "production"
   }

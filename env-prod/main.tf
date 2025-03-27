@@ -16,6 +16,17 @@ module "ec2" {
   security_group_id   = module.vpc.security_group_id
   instance_name       = "e2e-project-server"
 }
+module "alb" {
+  source             = "../modules/alb"
+  vpc_id             = module.vpc.vpc_id
+  public_subnet_ids  = module.vpc.public_subnet_id
+  alb_name           = "e2e-project-alb"
+  instance_id        = module.ec2.instance_id
+  alb_sg             = "alb_sg"
+}
+# output "alb_dns" {
+#     value = module.alb.alb_dns_name
+# }
 
 # module "asg" {
 #   source              = "../modules/asg"

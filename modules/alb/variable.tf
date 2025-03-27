@@ -11,8 +11,8 @@ variable "public_subnet_ids" {
 }
 
 
-variable "security_group_ids" {
-  type = list(string)
+variable "alb_sg" {
+  type = string
 }
 variable "instance_id" {
   type = string
