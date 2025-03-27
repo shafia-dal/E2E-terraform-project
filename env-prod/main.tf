@@ -30,7 +30,7 @@ module "asg" {
   max_size            = 3
   desired_capacity    = 1
   instance_name       = "e2e-project-server"
-  efs_id              = module.efs.efs_id
+  # efs_id              = module.efs.efs_id
 }
 
 module "alb" {
@@ -50,6 +50,5 @@ module "efs" {
   efs_name            = "e2e-project-efs"
   vpc_id              = module.vpc.vpc_id
   subnet_ids          = module.vpc.private_subnet_id  # Attach to private subnets
-  allowed_cidr_blocks = module.vpc.private_subnet_id  # Allow EC2 instances to access EFS
   efs_sg              = "efs_sg"
 }
