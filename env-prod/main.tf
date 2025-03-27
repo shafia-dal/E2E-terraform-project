@@ -42,3 +42,15 @@ module "alb" {
 output "alb_dns" {
     value = module.alb.alb_dns_name
 }
+
+module "efs" {
+  source             = "../modules/efs"
+  subnet_ids         = module.vpc.private_subnet
+  security_group_ids = [module.ec2.security_group_id]
+
+  tags = {
+    Name = "my-efs"
+    Env  = "prod"
+  }
+}
+

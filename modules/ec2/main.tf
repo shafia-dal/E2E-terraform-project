@@ -7,4 +7,12 @@ resource "aws_instance" "e2e-project" {
   tags = {
     Name = var.instance_name
   }
+    user_data = <<-EOF
+              #!/bin/bash
+              yum install -y amazon-efs-utils
+              mkdir -p /mnt/efs
+              mount -t efs ${module.efs.efs_id}:/ /mnt/efs
+              echo "${module.efs.efs_id}:/ /mnt/efs efs defaults,_netdev 0 0" >> /etc/fstab
+              EOF
 }
+
