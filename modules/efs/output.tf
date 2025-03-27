@@ -1,9 +1,7 @@
 output "efs_id" {
-  description = "ID of the EFS file system"
-  value       = aws_efs_file_system.this.id
+  value       = aws_efs_file_system.efs.id
 }
 
-output "mount_targets" {
-  description = "EFS mount target IDs"
-  value       = aws_efs_mount_target.this[*].id
+output "efs_security_group_id" {
+  value       = aws_security_group.efs_sg.id
 }

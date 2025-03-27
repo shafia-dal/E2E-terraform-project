@@ -1,45 +1,25 @@
-variable "creation_token" {
-  description = "Unique identifier for the EFS file system"
+variable "efs_name" {
   type        = string
-  default     = "my-efs"
 }
 
-variable "performance_mode" {
-  description = "The performance mode of the file system"
+variable "vpc_id" {
   type        = string
-  default     = "generalPurpose"
-}
-
-variable "throughput_mode" {
-  description = "Throughput mode for the file system"
-  type        = string
-  default     = "bursting"
-}
-
-variable "encrypted" {
-  description = "If true, the file system will be encrypted"
-  type        = bool
-  default     = true
-}
-
-variable "transition_to_ia" {
-  description = "Lifecycle policy for transition to Infrequent Access (IA)"
-  type        = string
-  default     = "AFTER_30_DAYS"
-}
-
-variable "tags" {
-  description = "Tags to apply to the EFS file system"
-  type        = map(string)
-  default     = {}
 }
 
 variable "subnet_ids" {
-  description = "List of subnet IDs for mount targets"
   type        = list(string)
 }
 
-variable "security_group_ids" {
-  description = "List of security group IDs for EFS"
+variable "allowed_cidr_blocks" {
   type        = list(string)
+}
+
+variable "performance_mode" {
+  type        = string #general perpose
+  default = "generalPurpose"
+}
+
+variable "throughput_mode" {
+  type        = string #bursting
+  default = "bursting"
 }

@@ -15,6 +15,7 @@ module "ec2" {
   subnet_id           = module.vpc.private_subnet_id[0]
   security_group_id   = module.vpc.security_group_id
   instance_name       = "e2e-project-server"
+  # efs_id              = module.efs.efs_id
 }
 
 module "asg" {
@@ -44,13 +45,10 @@ output "alb_dns" {
 }
 
 module "efs" {
-  source             = "../modules/efs"
-  subnet_ids         = module.vpc.private_subnet
-  security_group_ids = [module.ec2.security_group_id]
-
-  tags = {
-    Name = "my-efs"
-    Env  = "prod"
-  }
+  source              = "../modules/efs"
+  efs_name            = "e2e-project-efs"
+  vpc_id              = module.vpc.vpc_id
+  subnet_ids          = module.vpc.private_subnet_id  # Attach to private subnets
+  allowed_cidr_blocks = module.vpc.private_subnet_id  # Allow EC2 instances to access EFS
 }
 
