@@ -12,7 +12,7 @@ variable "public_subnet_ids" {
 
 
 variable "alb_sg" {
-  type = string
+  default = "alb_sg"
 }
 variable "instance_id" {
   type = string

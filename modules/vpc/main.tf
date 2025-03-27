@@ -1,4 +1,5 @@
 # modules/vpc/main.tf
+
 resource "aws_vpc" "e2e-project-vpc" {
   cidr_block = var.vpc_cidr
   tags = {
@@ -28,6 +29,7 @@ resource "aws_subnet" "private_subnet" {
     Name = "${var.vpc_name}-private-${element(var.azs, count.index)}"
   }
 }
+
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.e2e-project-vpc.id
   tags = {
