@@ -28,3 +28,6 @@ variable "vpc_id" {
 variable "asg_name" {
   type = string
 }
+variable "efs_id" {
+  type = string
+}

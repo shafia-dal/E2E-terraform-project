@@ -14,6 +14,13 @@ resource "aws_launch_template" "e2e-project-lt" {
       Name = var.instance_name
     }
   }
+   user_data = <<-EOF
+  #!/bin/bash
+  sudo yum update -y
+  sudo yum install -y amazon-efs-utils
+  sudo mkdir /mnt/efs
+  sudo mount -t efs ${var.efs_id}:/ /mnt/efs
+  EOF
 }
 
 # Define Auto Scaling Group

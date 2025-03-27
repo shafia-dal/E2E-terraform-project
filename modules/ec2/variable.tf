@@ -13,3 +13,7 @@ variable "security_group_id" {
 variable "instance_name" {
     type = string
 }
+variable "key_name" {
+  type = string
+  default = "E2E-APP-KEY"
+}

@@ -10,7 +10,6 @@ variable "public_subnet_ids" {
   type = list(string)
 }
 
-
 variable "alb_sg" {
   default = "alb_sg"
 }

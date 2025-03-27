@@ -11,7 +11,7 @@ resource "aws_efs_file_system" "efs" {
 
 ############ security group ##################3
 resource "aws_security_group" "efs_sg" {
-  name        = "${var.efs_name}-sg"
+  name        = var.efs_sg
   vpc_id      = var.vpc_id
 
   ingress {
@@ -35,8 +35,8 @@ resource "aws_security_group" "efs_sg" {
 
 ############ mount target ##################
 resource "aws_efs_mount_target" "efs_mount" {
-  count           = length(var.subnet_ids)
+  # count           = length(var.subnet_ids)
   file_system_id  = aws_efs_file_system.efs.id
-  subnet_id       = element(var.subnet_ids, count.index)
+  subnet_id       = var.public_subnet_ids
   security_groups = [aws_security_group.efs_sg.id]
 }
