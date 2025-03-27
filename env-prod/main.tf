@@ -1,6 +1,6 @@
 # main.tf
 module "vpc" {
-  source          = "./E2E-terraform-project/modules/vpc"
+  source          = "../modules/vpc"
   vpc_name        = "e2e-project-vpc" 
   vpc_cidr        = "10.0.0.0/16"
   security_group  = "e2e-server-sg"

@@ -1,5 +1,5 @@
 resource "aws_security_group" "alb_sg" {
-  name        = var.alb_name
+  name        = var.alb_sg
   description = "Security group for alb"
   vpc_id      = var.vpc_id
 
@@ -49,7 +49,7 @@ resource "aws_lb" "alb_loadbalancer" {
   internal           = false
   load_balancer_type = "application"
   subnets            = var.public_subnet_ids
-  security_groups    = [var.alb_sg]
+  security_groups    = [aws_security_group.alb_sg.id]
   tags = {
     Environment = "production"
   }

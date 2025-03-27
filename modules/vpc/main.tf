@@ -1,4 +1,5 @@
 # modules/vpc/main.tf
+
 resource "aws_vpc" "e2e-project-vpc" {
   cidr_block = var.vpc_cidr
   tags = {
@@ -28,6 +29,7 @@ resource "aws_subnet" "private_subnet" {
     Name = "${var.vpc_name}-private-${element(var.azs, count.index)}"
   }
 }
+
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.e2e-project-vpc.id
   tags = {
@@ -41,7 +43,7 @@ resource "aws_route_table" "public_rt" {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.igw.id
   }
-    tags = {
+  tags = {
     Name = "${var.vpc_name}-public-rt"
   }
 }
@@ -52,10 +54,9 @@ resource "aws_route_table_association" "public_rta" {
   route_table_id = aws_route_table.public_rt.id
 }
 
-#  PrivateRouteTable
 resource "aws_route_table" "private_rt" {
   vpc_id = aws_vpc.e2e-project-vpc.id
-    tags = {
+  tags = {
     Name = "${var.vpc_name}-private-rt"
   }
 }
@@ -66,33 +67,29 @@ resource "aws_route_table_association" "private_rta" {
   route_table_id = aws_route_table.private_rt.id
 }
 
-#  NAT Gateway (Required for instances in the private subnets to access the internet) -  Important
+# NAT Gateway (Single NAT Gateway)
 resource "aws_eip" "nat_gateway_eip" {
-  count = length(var.azs) # One EIP for each NAT gateway
   tags = {
-    Name = "${var.vpc_name}-nat-gateway-eip-${element(var.azs, count.index)}"
+    Name = "${var.vpc_name}-nat-gateway-eip"
   }
 }
 
 resource "aws_nat_gateway" "nat_gateway" {
-  count         = length(var.azs) # One NAT gateway for each AZ
-  allocation_id = element(aws_eip.nat_gateway_eip, count.index).id
-  subnet_id     = element(aws_subnet.public_subnet, count.index).id # NATs reside in public subnets
+  allocation_id = aws_eip.nat_gateway_eip.id
+  subnet_id     = aws_subnet.public_subnet[0].id # Place NAT in the first public subnet
 
   tags = {
-    Name = "${var.vpc_name}-nat-gateway-${element(var.azs, count.index)}"
+    Name = "${var.vpc_name}-nat-gateway"
   }
   depends_on = [aws_internet_gateway.igw]
 }
 
 # Add a route in the private route table to the NAT gateway
 resource "aws_route" "private_nat_gateway_route" {
-  count          = length(var.azs)
-  route_table_id = aws_route_table.private_rt.id
-  destination_cidr_block = ""
-  nat_gateway_id      = element(aws_nat_gateway.nat_gateway, count.index).id
+  route_table_id         = aws_route_table.private_rt.id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.nat_gateway.id
 }
-
 ###########################################################################3
 resource "aws_security_group" "e2e-server-sg" {
   name        = var.security_group
