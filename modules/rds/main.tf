@@ -59,7 +59,7 @@ resource "aws_security_group_rule" "ingress" {
 #subnet group
 resource "aws_db_subnet_group" "subnet_group" {
   name       = "db-subnet-group"
-  subnet_ids = var.private_subnet_id
+  subnet_ids = var.private_subnet_id[0]
   tags = {
     Name = "db-subnet-group"
   }

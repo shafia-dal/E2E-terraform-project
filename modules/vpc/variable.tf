@@ -22,3 +22,7 @@ variable "private_subnet_cidrs" {
 variable "security_group" {
   type = string
 }
+
+variable "alb_sg_id" {
+  type = string
+}

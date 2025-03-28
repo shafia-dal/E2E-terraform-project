@@ -44,6 +44,17 @@ resource "aws_security_group" "alb_sg" {
     Environment = "Development"
   }
 }
+resource "aws_security_group_rule" "ingress" {
+  type              = "ingress"
+  from_port         = 3306
+  to_port           = 3306
+  protocol          = "tcp"
+  
+  security_group_id = aws_security_group.alb_sg.id
+  source_security_group_id = var.security_group_id  #ec2 security group
+}
+
+
 resource "aws_lb" "alb_loadbalancer" {
   name               = "e2e-project-alb"
   internal           = false
