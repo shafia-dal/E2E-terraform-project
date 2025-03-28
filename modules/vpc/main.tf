@@ -139,6 +139,6 @@ resource "aws_security_group_rule" "ingress" {
   to_port           = 3306
   protocol          = "tcp"
   
-  security_group_id = aws_security_group.ec2-server-sg.id
+  security_group_id = aws_security_group.e2e-server-sg.id
   source_security_group_id = var.alb_sg_id  
 }
