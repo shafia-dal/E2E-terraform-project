@@ -1,6 +1,6 @@
 resource "aws_security_group" "elasticache_sg" {
   name        = var.elasticache_sg
-  description = "Security group for alb"
+  description = "Security group for elasticache"
   vpc_id      = var.vpc_id
 
   # Inbound HTTP
@@ -21,7 +21,7 @@ resource "aws_security_group" "elasticache_sg" {
   }
 
   tags = {
-    Name = "alb-group"
+    Name = "redis-group"
     Environment = "Development"
   }
 }
