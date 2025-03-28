@@ -50,3 +50,16 @@ module "efs" {
   subnet_id           = module.vpc.private_subnet_id  # Attach to private subnets
   efs_sg              = "efs_sg"
 }
+
+module "elasticache" {
+  source             = "../modules/elasticache"
+  vpc_id             = module.vpc.vpc_id
+  subnet_ids         = module.vpc.private_subnets
+  cluster_id         = "redis"
+  engine             = "redis"
+  elasticache_sg     = "elasticache_sg"
+  engine_version     = "7.0"
+  node_type          = "cache.t3.micro"
+  num_cache_nodes    = 1
+  security_group_id = module.vpc.security_group
+}
