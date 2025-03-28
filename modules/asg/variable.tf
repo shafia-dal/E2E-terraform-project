@@ -8,7 +8,7 @@ variable "security_group_id" {
     type = string
 }
 variable "subnet_ids" {
-    type = list(string) 
+    type = list(string)
 }
 variable "min_size" {
     type = number
