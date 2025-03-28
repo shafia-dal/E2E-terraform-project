@@ -18,6 +18,3 @@ variable "instance_id" {
   type = string
 }
 
-variable "security_group_id" { #ec2 security group
-  type = string
-}

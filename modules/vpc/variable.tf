@@ -25,4 +25,5 @@ variable "security_group" {
 
 variable "alb_sg_id" {
   type = string
+  description = "alb secuirty group id "
 }

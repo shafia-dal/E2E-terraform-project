@@ -135,8 +135,8 @@ resource "aws_security_group" "e2e-server-sg" {
 
 resource "aws_security_group_rule" "ingress" {
   type              = "ingress"
-  from_port         = 3306
-  to_port           = 3306
+  from_port         = 80
+  to_port           = 8080
   protocol          = "tcp"
   
   security_group_id = aws_security_group.e2e-server-sg.id

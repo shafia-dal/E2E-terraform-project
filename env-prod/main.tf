@@ -7,6 +7,7 @@ module "vpc" {
   azs             = ["us-east-1a", "us-east-1b", "us-east-1c"] 
   public_subnet_cidrs  = ["10.0.10.0/24", "10.0.20.0/24", "10.0.30.0/24"]
   private_subnet_cidrs = ["10.0.110.0/24", "10.0.120.0/24", "10.0.130.0/24"]
+  alb_sg_id = module.alb.alb_sg_id
 }
 module "ec2" {
   source              = "../modules/ec2"
@@ -46,7 +47,7 @@ module "rds" {
   source              = "../modules/rds"
   vpc_id              = module.vpc.vpc_id
   rds_sg              = "rds_sg"
-  private_subnet_id   = module.vpc.private_subnet_id
+  private_subnet_id   = module.vpc.private_subnet_id[0]
   engine              = "mysql"
   engine_version      = "8.0.35"
   instance_class      = "db.t3.medium"
