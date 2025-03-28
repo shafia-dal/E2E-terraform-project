@@ -17,6 +17,10 @@ module "ec2" {
   security_group_id   = module.vpc.security_group_id
   instance_name       = "e2e-project-server"
   efs_id              = module.efs.efs_id
+
+  rds_endpoint   = module.rds.rds_endpoint
+  rds_username   = "rds"
+  rds_password   = "password123"
 }
 
 module "asg" {

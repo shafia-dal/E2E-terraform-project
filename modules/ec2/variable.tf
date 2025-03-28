@@ -20,3 +20,18 @@ variable "key_name" {
 variable "efs_id" {
   type = string
 }
+variable "rds_endpoint" {
+  type = string
+  description = "The RDS endpoint"
+}
+
+variable "rds_username" {
+  type        = string
+  description = "RDS username"
+}
+
+variable "rds_password" {
+  type        = string
+  description = "RDS password"
+  sensitive   = true
+}
