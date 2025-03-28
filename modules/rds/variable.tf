@@ -8,7 +8,7 @@ variable "vpc_id" {
 }
 
 variable "private_subnet_id" {
-  type = string
+  type = list(string)
 }
 
 

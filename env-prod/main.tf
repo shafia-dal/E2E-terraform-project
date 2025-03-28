@@ -52,7 +52,7 @@ module "rds" {
   source              = "../modules/rds"
   vpc_id              = module.vpc.vpc_id
   rds_sg              = "rds_sg"
-  private_subnet_id   = module.vpc.private_subnet_id[0]
+  private_subnet_id   = module.vpc.private_subnet_id
   engine              = "mysql"
   engine_version      = "8.0.35"
   instance_class      = "db.t3.medium"
