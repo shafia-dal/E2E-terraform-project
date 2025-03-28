@@ -15,7 +15,7 @@ module "ec2" {
   subnet_id           = module.vpc.private_subnet_id[0]
   security_group_id   = module.vpc.security_group_id
   instance_name       = "e2e-project-server"
-  # efs_id              = module.efs.efs_id
+  efs_id              = module.efs.efs_id
 }
 
 module "asg" {
@@ -25,12 +25,10 @@ module "asg" {
   ami_id              = "ami-084568db4383264d4"
   instance_type       = "t3a.large"
   security_group_id   = module.vpc.security_group_id
-  subnet_ids          = module.vpc.public_subnet_id
+  subnet_ids           = module.vpc.private_subnet_id
   min_size            = 1
   max_size            = 3
-  desired_capacity    = 1
   instance_name       = "e2e-project-server"
-  # efs_id              = module.efs.efs_id
 }
 
 module "alb" {
@@ -49,6 +47,6 @@ module "efs" {
   source              = "../modules/efs"
   efs_name            = "e2e-project-efs"
   vpc_id              = module.vpc.vpc_id
-  subnet_ids          = module.vpc.private_subnet_id  # Attach to private subnets
+  subnet_id           = module.vpc.private_subnet_id  # Attach to private subnets
   efs_sg              = "efs_sg"
 }

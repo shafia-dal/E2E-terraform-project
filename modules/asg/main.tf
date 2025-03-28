@@ -14,18 +14,10 @@ resource "aws_launch_template" "e2e-project-lt" {
       Name = var.instance_name
     }
   }
-   user_data = <<-EOF
-  #!/bin/bash
-  sudo yum update -y
-  sudo yum install -y amazon-efs-utils
-  sudo mkdir /mnt/efs
-  sudo mount -t efs ${var.efs_id}:/ /mnt/efs
-  EOF
 }
 
 # Define Auto Scaling Group
 resource "aws_autoscaling_group" "e2e-project-asg" {
-  desired_capacity     = var.desired_capacity
   max_size             = var.max_size
   min_size             = var.min_size
   vpc_zone_identifier  = var.subnet_ids

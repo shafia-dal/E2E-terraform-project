@@ -17,3 +17,6 @@ variable "key_name" {
   type = string
   default = "E2E-APP-KEY"
 }
+variable "efs_id" {
+  type = string
+}

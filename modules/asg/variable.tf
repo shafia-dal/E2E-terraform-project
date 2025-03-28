@@ -8,15 +8,12 @@ variable "security_group_id" {
     type = string
 }
 variable "subnet_ids" {
-    type = list(string) 
+    type = list(string)
 }
 variable "min_size" {
     type = number
 }
 variable "max_size" {
-    type = number
-}
-variable "desired_capacity" {
     type = number
 }
 variable "instance_name" {
@@ -26,8 +23,5 @@ variable "vpc_id" {
     type = string
 }
 variable "asg_name" {
-  type = string
-}
-variable "efs_id" {
   type = string
 }
