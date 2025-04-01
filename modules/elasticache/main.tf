@@ -41,7 +41,7 @@ resource "aws_elasticache_cluster" "e2e-project-elasticache-cluster" {
   parameter_group_name = "default.redis7"
   port                 = 6379
   subnet_group_name    = aws_elasticache_subnet_group.e2e-project-esg.name
-  security_group_ids   = aws_security_group.elasticache_sg.id
+  security_group_ids   = [aws_security_group.elasticache_sg.id]
 
   tags = {
     Name = var.cluster_id

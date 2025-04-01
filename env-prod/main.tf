@@ -7,6 +7,7 @@ module "vpc" {
   azs             = ["us-east-1a", "us-east-1b", "us-east-1c"] 
   public_subnet_cidrs  = ["10.0.10.0/24", "10.0.20.0/24", "10.0.30.0/24"]
   private_subnet_cidrs = ["10.0.110.0/24", "10.0.120.0/24", "10.0.130.0/24"]
+  # alb_sg_id          = module.alb.alb_sg_id
 }
 module "ec2" {
   source              = "../modules/ec2"
@@ -55,7 +56,7 @@ module "elasticache" {
   source             = "../modules/elasticache"
   vpc_id             = module.vpc.vpc_id
   subnet_ids         = module.vpc.private_subnet_id
-  cluster_id         = "redis cluster"
+  cluster_id         = "redis"
   engine             = "redis"
   elasticache_sg     = "elasticache_sg"
   engine_version     = "7.0"
