@@ -9,35 +9,39 @@ module "vpc" {
   private_subnet_cidrs = ["10.0.110.0/24", "10.0.120.0/24", "10.0.130.0/24"]
   # alb_sg_id          = module.alb.alb_sg_id
 }
-module "ec2" {
-  source              = "../modules/ec2"
-  ami_id              = "ami-084568db4383264d4"
-  instance_type       = "t3a.large"
-  subnet_id           = module.vpc.private_subnet_id[0]
-  security_group_id   = module.vpc.security_group_id
-  instance_name       = "e2e-project-server"
-  efs_id              = module.efs.efs_id
-}
+# module "ec2" {
+#   source              = "../modules/ec2"
+#   ami_id              = "ami-084568db4383264d4"
+#   instance_type       = "t3a.large"
+#   subnet_id           = module.vpc.private_subnet_id[0]
+#   security_group_id   = module.vpc.security_group_id
+#   instance_name       = "e2e-project-server"
+#   efs_id              = module.efs.efs_id
+# }
 
 module "asg" {
-  source              = "../modules/asg"
+  source              = "/home/ubuntu/E2E-terraform-project/modules/asg"
   asg_name            = "e2e-project-asg" 
   vpc_id              = module.vpc.vpc_id
   ami_id              = "ami-084568db4383264d4"
   instance_type       = "t3a.large"
   security_group_id   = module.vpc.security_group_id
-  subnet_ids           = module.vpc.private_subnet_id
+  subnet_id          = module.vpc.private_subnet_id[0]
   min_size            = 1
   max_size            = 3
   instance_name       = "e2e-project-server"
+  target_group_arn = module.alb.target_group_arns
+  rds_endpoint    = module.rds.rds_endpoint
+  rds_password =module.rds.rds_password
+  rds_username = module.rds.rds_username
+  efs_id = module.efs.efs_id
 }
 
 module "alb" {
-  source             = "../modules/alb"
+  source             = "/home/ubuntu/E2E-terraform-project/modules/alb"
   vpc_id             = module.vpc.vpc_id
   public_subnet_ids  = module.vpc.public_subnet_id
   alb_name           = "e2e-project-alb"
-  instance_id        = module.ec2.instance_id
   alb_sg             = "alb_sg"
 }
 output "alb_dns" {
@@ -63,4 +67,19 @@ module "elasticache" {
   node_type          = "cache.t3.micro"
   num_cache_nodes    = 1
   security_group_id = module.vpc.security_group_id
+}
+
+module "rds" {
+  source              = "../modules/rds"
+  vpc_id              = module.vpc.vpc_id
+  rds_sg              = "rds_sg"
+  private_subnet_id   = module.vpc.private_subnet_id
+  engine              = "mysql"
+  engine_version      = "8.0.35"
+  instance_class      = "db.t3.medium"
+  username            = "rds"
+  db_password         = "password123"
+  allocated_storage   = 20
+  security_group_id = module.vpc.security_group_id
+
 }

@@ -83,9 +83,3 @@ resource "aws_lb_listener" "listener" {
     type             = "forward"
   }
 }
-
-resource "aws_lb_target_group_attachment" "instance_attach" {
-  target_group_arn = aws_lb_target_group.alb-tg.arn
-  target_id        = var.instance_id
-  port             = 8080
-}
