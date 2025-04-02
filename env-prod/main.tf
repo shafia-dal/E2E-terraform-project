@@ -20,7 +20,7 @@ module "vpc" {
 # }
 
 module "asg" {
-  source              = "../modules/asg"
+  source              = "/home/ubuntu/E2E-terraform-project/modules/asg"
   asg_name            = "e2e-project-asg" 
   vpc_id              = module.vpc.vpc_id
   ami_id              = "ami-084568db4383264d4"
@@ -35,10 +35,11 @@ module "asg" {
   rds_password =module.rds.rds_password
   rds_username = module.rds.rds_username
   efs_id = module.efs.efs_id
+  
 }
 
 module "alb" {
-  source             = "../modules/alb"
+  source             = "/home/ubuntu/E2E-terraform-project/modules/alb"
   vpc_id             = module.vpc.vpc_id
   public_subnet_ids  = module.vpc.public_subnet_id
   alb_name           = "e2e-project-alb"

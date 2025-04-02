@@ -5,17 +5,17 @@ echo "running scripts"
 sudo apt update -y
 sudo apt install -y nfs-common
 ## mount efs 
-sudo mkdir /mnt/
+sudo mkdir -p /mnt/bookstack
 sudo apt-get update
 sudo apt-get -y install git binutils rustc cargo pkg-config libssl-dev gettext
 git clone https://github.com/aws/efs-utils
  cd efs-utils
  ./build-deb.sh
 sudo apt-get -y install ./build/amazon-efs-utils*deb
-sudo mount -t efs "${efs_id }":/ /mnt/nextcloud/
+sudo mount -t efs "${efs_id }":/ /mnt/bookstack/
 sudo cp /etc/fstab /etc/fstab.bak
 echo "Adding EFS mount entry to /etc/fstab"
-echo "${efs_id }":/ /mnt/nextcloud efs defaults,_netdev 0 0 | sudo tee -a /etc/fstab
+echo "${efs_id }":/ /mnt/bookstack efs defaults,_netdev 0 0 | sudo tee -a /etc/fstab
 
 sudo mount -a 
 
@@ -38,7 +38,8 @@ echo "MySQL server is NOT installed."
 fi
 sudo apt-get update -y
 sudo apt-get install mysql-client -y
-if mysql -h "${rds_endpoint}" -u "${rds_username}" -p "${rds_password}" -e CREATE DATABASE nextcloud CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;; then
+if mysql -h "${rds_endpoint}" -u "${rds_username}" -p"${rds_password}" -e "CREATE DATABASE nextcloud CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" 
+then
 echo "nextcloud created successfully on RDS."
 else
   echo "Error: Failed to create database nextcloud on RDS. Check the output above for details."
