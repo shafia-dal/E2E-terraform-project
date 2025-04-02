@@ -7,21 +7,17 @@ module "vpc" {
   azs             = ["us-east-1a", "us-east-1b", "us-east-1c"] 
   public_subnet_cidrs  = ["10.0.10.0/24", "10.0.20.0/24", "10.0.30.0/24"]
   private_subnet_cidrs = ["10.0.110.0/24", "10.0.120.0/24", "10.0.130.0/24"]
-  alb_sg_id = module.alb.alb_sg_id
+  alb_sg_id          = module.alb.alb_sg_id
 }
-module "ec2" {
-  source              = "../modules/ec2"
-  ami_id              = "ami-084568db4383264d4"
-  instance_type       = "t3a.large"
-  subnet_id           = module.vpc.private_subnet_id[0]
-  security_group_id   = module.vpc.security_group_id
-  instance_name       = "e2e-project-server"
-  efs_id              = module.efs.efs_id
-
-  rds_endpoint   = module.rds.rds_endpoint
-  rds_username   = "rds"
-  rds_password   = "password123"
-}
+# module "ec2" {
+#   source              = "../modules/ec2"
+#   ami_id              = "ami-084568db4383264d4"
+#   instance_type       = "t3a.large"
+#   subnet_id           = module.vpc.private_subnet_id[0]
+#   security_group_id   = module.vpc.security_group_id
+#   instance_name       = "e2e-project-server"
+#   efs_id              = module.efs.efs_id
+# }
 
 module "asg" {
   source              = "../modules/asg"
@@ -30,10 +26,15 @@ module "asg" {
   ami_id              = "ami-084568db4383264d4"
   instance_type       = "t3a.large"
   security_group_id   = module.vpc.security_group_id
-  subnet_ids           = module.vpc.private_subnet_id
+  subnet_id          = module.vpc.private_subnet_id[0]
   min_size            = 1
   max_size            = 3
   instance_name       = "e2e-project-server"
+  target_group_arn = module.alb.target_group_arns
+  rds_endpoint    = module.rds.rds_endpoint
+  rds_password =module.rds.rds_password
+  rds_username = module.rds.rds_username
+  efs_id = module.efs.efs_id
 }
 
 module "alb" {
@@ -41,7 +42,6 @@ module "alb" {
   vpc_id             = module.vpc.vpc_id
   public_subnet_ids  = module.vpc.public_subnet_id
   alb_name           = "e2e-project-alb"
-  instance_id        = module.ec2.instance_id
   alb_sg             = "alb_sg"
 }
 output "alb_dns" {
@@ -69,3 +69,17 @@ module "efs" {
   subnet_id           = module.vpc.private_subnet_id  # Attach to private subnets
   efs_sg              = "efs_sg"
 }
+
+module "elasticache" {
+  source             = "../modules/elasticache"
+  vpc_id             = module.vpc.vpc_id
+  subnet_ids         = module.vpc.private_subnet_id
+  cluster_id         = "redis"
+  engine             = "redis"
+  elasticache_sg     = "elasticache_sg"
+  engine_version     = "7.0"
+  node_type          = "cache.t3.micro"
+  num_cache_nodes    = 1
+  security_group_id = module.vpc.security_group_id
+}
+
