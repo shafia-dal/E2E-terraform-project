@@ -39,6 +39,20 @@ output "alb_dns" {
     value = module.alb.alb_dns_name
 }
 
+module "rds" {
+  source              = "../modules/rds"
+  vpc_id              = module.vpc.vpc_id
+  rds_sg              = "rds_sg"
+  private_subnet_id   = module.vpc.private_subnet_id
+  engine              = "mysql"
+  engine_version      = "8.0.35"
+  instance_class      = "db.t3.medium"
+  username            = "rds"
+  db_password         = "password123"
+  allocated_storage   = 20
+  security_group_id = module.vpc.security_group_id
+
+}
 module "efs" {
   source              = "../modules/efs"
   efs_name            = "e2e-project-efs"
@@ -60,17 +74,3 @@ module "elasticache" {
   security_group_id = module.vpc.security_group_id
 }
 
-module "rds" {
-  source              = "../modules/rds"
-  vpc_id              = module.vpc.vpc_id
-  rds_sg              = "rds_sg"
-  private_subnet_id   = module.vpc.private_subnet_id
-  engine              = "mysql"
-  engine_version      = "8.0.35"
-  instance_class      = "db.t3.medium"
-  username            = "rds"
-  db_password         = "password123"
-  allocated_storage   = 20
-  security_group_id = module.vpc.security_group_id
-
-}

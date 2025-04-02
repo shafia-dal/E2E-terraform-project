@@ -115,6 +115,15 @@ resource "aws_security_group" "e2e-server-sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+#mysql
+  ingress {
+    description = "RDS MYSQL traffic "
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   # Inbound SSH
   ingress {
     description = "SSH from anywhere"
@@ -131,4 +140,14 @@ resource "aws_security_group" "e2e-server-sg" {
     protocol    = "-1"  # Means all protocols
     cidr_blocks = ["0.0.0.0/0"]
   }
+}
+
+resource "aws_security_group_rule" "ingress" {
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 8080
+  protocol          = "tcp"
+  
+  security_group_id = aws_security_group.e2e-server-sg.id
+  source_security_group_id = var.alb_sg_id  
 }

@@ -8,12 +8,13 @@ resource "aws_instance" "e2e-project" {
   tags = {
     Name = var.instance_name
   }
-     user_data = <<-EOF
-  #!/bin/bash
-  sudo apt update -y
-  sudo apt install -y amazon-efs-utils
-  sudo mkdir /mnt/efs
-  sudo mount -t efs ${var.efs_id}:/ /mnt/efs
-  EOF
+user_data                   = data.template_file.instance_provision.rendered
+
+}
+data "template_file" "instance_provision" {
+  template = file("${path.module}/userscipt.sh")
 }
 
+# data "template_file" "instance_provision" {
+#   template = file("${path.module}/../scripts/instance_provisioning.bash")
+# }

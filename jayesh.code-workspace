@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "../../.."
+		},
+		{
+			"name": "E2E-terraform-project",
+			"path": "../.."
+		}
+	],
+	"settings": {}
+}

@@ -13,3 +13,5 @@ variable "public_subnet_ids" {
 variable "alb_sg" {
   default = "alb_sg"
 }
+
+

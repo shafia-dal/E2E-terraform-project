@@ -44,6 +44,9 @@ resource "aws_security_group" "alb_sg" {
     Environment = "Development"
   }
 }
+
+
+
 resource "aws_lb" "alb_loadbalancer" {
   name               = "e2e-project-alb"
   internal           = false

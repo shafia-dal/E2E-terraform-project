@@ -32,7 +32,7 @@ data "template_file" "instance_provision" {
     rds_endpoint   = var.rds_endpoint
     rds_username   = var.rds_username
     rds_password   = var.rds_password
-    # ... any other variables used in your user_data template
+    #... any other variables used in your user_data template
   }
 }
 

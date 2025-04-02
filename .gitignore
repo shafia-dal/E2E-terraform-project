@@ -1,1 +1,3 @@
+modules/VPC/.terraform.lock.hcl
 *.terraform*
+/home/jayesh/E2E-terraform-project/notes

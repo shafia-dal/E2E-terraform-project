@@ -1,6 +1,9 @@
+#instance profile
 variable "iam_instance_profile" {
   type = string
 }
+
+#instance variables
 variable "ami_id" {
     type = string
 }
@@ -36,6 +39,8 @@ variable "target_group_arn" {
   type = string
 }
 
+
+##rds variables 
 variable "efs_id" {
   type = string
 }
