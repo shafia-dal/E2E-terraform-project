@@ -7,20 +7,10 @@ module "vpc" {
   azs             = ["us-east-1a", "us-east-1b", "us-east-1c"] 
   public_subnet_cidrs  = ["10.0.10.0/24", "10.0.20.0/24", "10.0.30.0/24"]
   private_subnet_cidrs = ["10.0.110.0/24", "10.0.120.0/24", "10.0.130.0/24"]
-  # alb_sg_id          = module.alb.alb_sg_id
+  alb_sg_id          = module.alb.alb_sg_id
 }
-# module "ec2" {
-#   source              = "../modules/ec2"
-#   ami_id              = "ami-084568db4383264d4"
-#   instance_type       = "t3a.large"
-#   subnet_id           = module.vpc.private_subnet_id[0]
-#   security_group_id   = module.vpc.security_group_id
-#   instance_name       = "e2e-project-server"
-#   efs_id              = module.efs.efs_id
-# }
-
 module "asg" {
-  source              = "/home/ubuntu/E2E-terraform-project/modules/asg"
+  source              = "../modules/asg"
   asg_name            = "e2e-project-asg" 
   vpc_id              = module.vpc.vpc_id
   ami_id              = "ami-084568db4383264d4"
@@ -35,6 +25,7 @@ module "asg" {
   rds_password =module.rds.rds_password
   rds_username = module.rds.rds_username
   efs_id = module.efs.efs_id
+  iam_instance_profile = "E2ERoleTerraform"
 }
 
 module "alb" {
