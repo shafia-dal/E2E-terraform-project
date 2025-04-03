@@ -1,0 +1,98 @@
+version: 0.2
+
+env:
+  shell: bash
+  variables:
+    NODE_VERSION: "18" # Or your preferred Node.js version
+    NPM_CACHE_PATH: "/root/.npm"
+ 
+  git-credential-helper: no
+
+phases:
+  install:
+    on-failure: ABORT
+    runtime-versions:
+      nodejs: "$NODE_VERSION"
+    commands:
+      - echo "Starting install phase..."
+      - echo "Using Node.js version: $NODE_VERSION"
+      - npm install -g npm
+      - npm --version
+    finally:
+      - echo "Install phase finished."
+
+  pre_build:
+    on-failure: ABORT
+    commands:
+      - echo "Starting pre_build phase..."
+      - echo "Current directory: $(pwd)"
+      - ls -al
+      - echo "Installing dependencies..."
+      - npm install
+    finally:
+      - echo "Pre_build phase finished."
+
+  build:
+    on-failure: ABORT
+    commands:
+      - echo "Starting build phase..."
+      - echo "Running any build scripts (if applicable)..."
+      - # Add any build commands your application requires (e.g., building frontend assets)
+      - echo "Building Docker image..."
+      - docker build -t my-nodejs-app .
+      - echo "Build completed. Docker image tagged as my-nodejs-app"
+    finally:
+      - echo "Build phase finished."
+
+  post_build:
+    on-failure: CONTINUE
+    commands:
+      - echo "Starting post_build phase..."
+      - echo "Tagging Docker image for ECR..."
+     
+      - AWS_REGION=$(aws configure get region)
+      - IMAGE_REPO_NAME="my-nodejs-repo" # Replace with your ECR repository name
+      - IMAGE_TAG="${BUILD_VERSION:-latest}"
+      - docker tag my-nodejs-repo:latest 091846656105.dkr.ecr.us-east-1.amazonaws.com/my-nodejs-repo:latest
+      - echo "Logging in to ECR..."
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 091846656105.dkr.ecr.us-east-1.amazonaws.com
+      - echo "Pushing Docker image to ECR..."
+      - docker push 091846656105.dkr.ecr.us-east-1.amazonaws.com/my-nodejs-repo:latest
+      - echo "Docker image pushed to ECR with tag: my-nodejs-repo"
+      - export IMAGE_URI=091846656105.dkr.ecr.us-east-1.amazonaws.com/my-nodejs-repo
+      - echo "Image URI: $IMAGE_URI"
+      - export BUILD_VERSION=$(date +%Y%m%d%H%M%S)
+    finally:
+      - echo "Post_build phase finished."
+
+reports:
+  # Optional: Configure test reporting
+  # test-report:
+  #   files:
+  #     - 'test-results.xml'
+  #   base-directory: '.'
+  #   file-format: JUNITXML
+
+artifacts:
+  files:
+    - buildspec.yml # Include buildspec in artifacts for debugging if needed
+    - appspec.yml   # You'll likely need an appspec.yml for CodeDeploy on EC2
+    - scripts/* # Include any deployment scripts
+  name: "build-artifacts-$BUILD_VERSION.zip"
+  discard-paths: yes
+  base-directory: "."
+  exclude-paths:
+    - "node_modules/**"
+    - ".git/**"
+    - "build-output/**"
+  enable-symlinks: no
+  s3-prefix: "e2e-state-bucket" #smae we are using for storing artifact
+
+cache:
+  key: "npm-cache-{{ checksum 'package-lock.json' }}"
+  fallback-keys:
+    - "npm-cache-"
+  action: restore
+  paths:
+    - '$NPM_CACHE_PATH/**/*'
+    - 'node_modules/**/*'
