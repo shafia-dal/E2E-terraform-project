@@ -27,6 +27,11 @@ module "asg" {
   efs_id            = module.efs.efs_id
 }
 module "alb" {
+  source             = "../modules/alb"
+  vpc_id             = module.vpc.vpc_id
+  public_subnet_ids  = module.vpc.public_subnet_id
+  alb_name           = "e2e-project-alb"
+  alb_sg             = "alb_sg"
   source            = "/home/ubuntu/E2E-terraform-project/modules/alb"
   vpc_id            = module.vpc.vpc_id
   public_subnet_ids = module.vpc.public_subnet_id
