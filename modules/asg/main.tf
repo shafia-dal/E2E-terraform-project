@@ -4,9 +4,7 @@ resource "aws_launch_template" "e2e-project-lt" {
   instance_type = "t3a.large"
   user_data     = base64encode(data.template_file.instance_provision.rendered)
   
-    iam_instance_profile {
-    name = var.iam_instance_profile
-  }
+    
   network_interfaces {
     associate_public_ip_address = false
     security_groups             = [var.security_group_id]
