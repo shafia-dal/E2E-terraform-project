@@ -24,6 +24,3 @@ variable "private_subnet" {
 variable "project_name" {
   type = string
 }
-variable "repository_url" {
-  type = string
-}

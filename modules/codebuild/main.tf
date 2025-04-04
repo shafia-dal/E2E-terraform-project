@@ -1,8 +1,7 @@
 ######## S3 ##############
-# resource "aws_s3_bucket" "e2e_artifect" {
-#   bucket = "e2e_artifect_bucket"
-# }
-
+resource "aws_s3_bucket" "e2e_artifect" {
+  bucket = "e2e-artifect-bucket"
+}
 ############# codebuild iam role ##########
 resource "aws_iam_role" "e2e_codebuild_iam" {
   name = "e2e_codebuild_iam"
@@ -64,7 +63,7 @@ resource "aws_iam_role_policy" "e2e_codebuild_iam_policy" {
       ],
       "Condition": {
         "StringEquals": {
-          "ec2:${var.private_subnet[0]}"
+          "ec2:${var.private_subnet}":"",
           "ec2:AuthorizedService": "codebuild.amazonaws.com"
         }
       }
@@ -102,14 +101,9 @@ resource "aws_codebuild_project" "e2e_codebuild_project" {
 
   environment {
     compute_type                = "BUILD_GENERAL1_SMALL"
-    image                       = "aws/codebuild/standard:1.0"
+    image                       = "aws/codebuild/standard:6.0"
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
-
-  environment_variable {
-      name  = "ECR_REPOSITORY"
-      value = aws_ecr_repository.e2e_ecr_repo.repository_url
-  }
 
   #   environment_variable {
   #     name  = "SOME_KEY2"

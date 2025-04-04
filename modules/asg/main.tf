@@ -3,9 +3,9 @@ resource "aws_launch_template" "e2e-project-lt"{
   image_id      = var.ami_id 
   instance_type = "t3a.large"
   user_data     = base64encode(data.template_file.instance_provision.rendered)
-  iam_instance_profile {
-    name = aws_iam_instance_profile.asg_instance_profile.arn
-  }
+  # iam_instance_profile {
+  #   name = aws_iam_instance_profile.asg_instance_profile.arn
+  # }
  
   network_interfaces {
     associate_public_ip_address = false
@@ -71,7 +71,7 @@ resource "aws_iam_role" "ec2_role" {
 }
 
 # Create the instance profile
-resource "aws_iam_instance_profile" "ec2_profile" {
-  name = "my-ec2-instance-profile"
-  role = aws_iam_role.ec2_role.name
-}
+# resource "aws_iam_instance_profile" "ec2_profile" {
+#   name = "my-ec2-instance-profile"
+#   role = aws_iam_role.ec2_role.name
+# }
