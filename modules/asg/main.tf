@@ -1,14 +1,12 @@
 # Define Launch Template
-resource "aws_launch_template" "e2e-project-lt" {
+resource "aws_launch_template" "e2e-project-lt"{
   image_id      = var.ami_id 
   instance_type = "t3a.large"
   user_data     = base64encode(data.template_file.instance_provision.rendered)
-
   network_interfaces {
     associate_public_ip_address = false
     security_groups             = [var.security_group_id]
   }
-
   
   tag_specifications {
     resource_type = "instance"
@@ -51,3 +49,25 @@ resource "aws_autoscaling_group" "e2e-project-asg" {
     propagate_at_launch = true
   }
 }
+# Create the role
+resource "aws_iam_role" "ec2_role" {
+  name = "my-ec2-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+# Create the instance profile
+# resource "aws_iam_instance_profile" "ec2_profile" {
+#   name = "my-ec2-instance-profile"
+#   role = aws_iam_role.ec2_role.name
+# }

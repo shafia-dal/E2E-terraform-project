@@ -1,5 +1,3 @@
-#instance profile
-
 #instance variables
 variable "ami_id" {
     type = string
