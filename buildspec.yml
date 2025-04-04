@@ -15,7 +15,8 @@ phases:
       nodejs: "$NODE_VERSION"
     commands:
       - echo "Starting install phase..."
-      - echo "Using Node.js version: $NODE_VERSION"
+      - echo "Using Node.js version:=$(node --version)"
+      - echo "Installing Node.js version:= $NODE_VERSION"
       - npm install -g npm
       - npm --version
     finally:
@@ -25,7 +26,7 @@ phases:
     on-failure: ABORT
     commands:
       - echo "Starting pre_build phase..."
-      - echo "Current directory: $(pwd)"
+      - echo "Current directory $(pwd)"
       - ls -al
       - echo "Installing dependencies..."
       - npm install
