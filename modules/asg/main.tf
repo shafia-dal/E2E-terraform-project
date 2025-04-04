@@ -3,8 +3,7 @@ resource "aws_launch_template" "e2e-project-lt" {
   image_id      = var.ami_id 
   instance_type = "t3a.large"
   user_data     = base64encode(data.template_file.instance_provision.rendered)
-  
-    
+
   network_interfaces {
     associate_public_ip_address = false
     security_groups             = [var.security_group_id]

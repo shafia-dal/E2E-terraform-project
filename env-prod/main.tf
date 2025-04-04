@@ -25,7 +25,7 @@ module "asg" {
   rds_password =module.rds.rds_password
   rds_username = module.rds.rds_username
   efs_id = module.efs.efs_id
-  
+  iam_instance_profile = "E2ERoleTerraform"
 }
 
 module "alb" {
