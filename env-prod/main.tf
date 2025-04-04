@@ -78,4 +78,19 @@ module "codebuild" {
   project_name = "e2e_codebuild_project"
   vpc_id = module.vpc.vpc_id
   private_subnet = module.vpc.private_subnet_id[0]
+  artifect_bucket = "e2e-artifect-bucket"
+}
+
+module "codedeploy" {
+  source = "../modules/codedeploy"
+  codedeploy_app = "nodejs-app-deployment"
+  deployment_group_name = "nodejs-deployment-group"
+}
+module "codepipeline" {
+  source = "../modules/codepipeline"
+  artifect_bucket = module.codebuild.artifect_bucket
+  project_name = module.codebuild.codebuild_project_name
+  codedeploy_app = module.codedeploy.codedeploy_app
+  deployment_group_name = module.codedeploy.deployment_group_name
+  artifect_bucket_arn = module.codebuild.artifect_bucket_arn
 }

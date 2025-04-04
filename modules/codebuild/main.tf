@@ -1,10 +1,10 @@
 ######## S3 ##############
 resource "aws_s3_bucket" "e2e_artifect" {
-  bucket = "e2e-artifect-bucket"
+  bucket = var.artifect_bucket
 }
 ############# codebuild iam role ##########
-resource "aws_iam_role" "e2e_codebuild_iam" {
-  name = "e2e_codebuild_iam"
+resource "aws_iam_role" "e2e_codebuild_role" {
+  name = "e2e_codebuild_role"
 
   assume_role_policy = <<EOF
 {
@@ -23,7 +23,7 @@ EOF
 }
 
 resource "aws_iam_role_policy" "e2e_codebuild_iam_policy" {
-  role = "${aws_iam_role.e2e_codebuild_iam.name}"
+  role = "${aws_iam_role.e2e_codebuild_role.name}"
 
   policy = <<POLICY
 {
@@ -32,7 +32,8 @@ resource "aws_iam_role_policy" "e2e_codebuild_iam_policy" {
     {
       "Effect": "Allow",
       "Resource": [
-        "*"
+        "*",
+        "arn:aws:ecr:us-east-1:091846656105:repository/my-nodejs-repo"
       ],
       "Action": [
         "logs:CreateLogGroup",
@@ -88,7 +89,7 @@ resource "aws_codebuild_project" "e2e_codebuild_project" {
   name          = var.project_name
   description   = "test_codebuild_project"
   # build_timeout = "5"
-  service_role  = "${aws_iam_role.e2e_codebuild_iam.arn}"
+  service_role  = "${aws_iam_role.e2e_codebuild_role.arn}"
 
   artifacts {
     type = "NO_ARTIFACTS"
