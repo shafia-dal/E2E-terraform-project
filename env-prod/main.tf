@@ -94,4 +94,5 @@ module "codepipeline" {
   codedeploy_app        = module.codedeploy.codedeploy_app
   deployment_group_name = module.codedeploy.deployment_group_name
   artifect_bucket_arn   = module.codebuild.artifect_bucket_arn
+  github_connection_arn = "arn:aws:codeconnections:us-east-1:091846656105:connection/cde9ea26-bd2d-4fad-b1e8-24f71fb19bac"
 }

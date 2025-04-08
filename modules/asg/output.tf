@@ -7,3 +7,7 @@ output "asg_id" {
 output "rendered_user_data" {
   value = data.template_file.instance_provision.rendered
 }
+
+output "asg_name" {
+  value = aws_autoscaling_group.e2e-project-asg.name
+}

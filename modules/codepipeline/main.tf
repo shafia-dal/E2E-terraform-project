@@ -7,21 +7,21 @@ resource "aws_codepipeline" "myapp_pipeline" {
     location = var.artifect_bucket
   }
 
-  stage {
+ stage {
     name = "Source"
 
     action {
       name             = "GitHub_Source"
       category         = "Source"
-      owner            = "ThirdParty"
-      provider         = "GitHub"
+      owner            = "AWS"
+      provider         = "CodeStarSourceConnection"
       version          = "1"
       output_artifacts = ["SourceOutput"]
 
       configuration = {
-        Owner      = "shafia-dal"
-        Repo       = "nodejs-app"
-        Branch     = "master"
+        ConnectionArn    = var.github_connection_arn
+        FullRepositoryId = "shafia-dal/nodejs-app"
+        BranchName       = "master"
       }
     }
   }
@@ -103,6 +103,19 @@ resource "aws_iam_role_policy" "e2e_codepipeline_iam_policy" {
       "Effect": "Allow",
       "Action": "s3:ListBucket",
       "Resource": "${var.artifect_bucket_arn}"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+          "codeconnections:*",
+          "codestar-connections:*"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "codebuild:*",
+      "Resource": "*"
     }
   ]
 }
