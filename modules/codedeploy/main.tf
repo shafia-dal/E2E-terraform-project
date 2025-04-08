@@ -1,5 +1,6 @@
 resource "aws_codedeploy_app" "e2e-codedeploy-app" {
   name = var.codedeploy_app
+  compute_platform = "Server"
 }
 
 resource "aws_codedeploy_deployment_group" "e2e-codedeployment-group" {
@@ -9,7 +10,7 @@ resource "aws_codedeploy_deployment_group" "e2e-codedeployment-group" {
 
   deployment_style {
     deployment_type   = "IN_PLACE"
-    deployment_option = "WITH_TRAFFIC_CONTROL"
+    deployment_option = "WITHOUT_TRAFFIC_CONTROL"
   }
 
   autoscaling_groups = [ 
@@ -112,6 +113,11 @@ resource "aws_iam_role_policy" "e2e_codedeploy_iam_policy" {
                 "ecr:GetDownloadUrlForLayer",
                 "ecr:BatchGetImage"
             ],
+            "Effect": "Allow",
+            "Resource": "*"
+        },
+        {
+            "Action":"EC2:*",
             "Effect": "Allow",
             "Resource": "*"
         }

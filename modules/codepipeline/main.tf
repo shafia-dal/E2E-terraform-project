@@ -116,6 +116,11 @@ resource "aws_iam_role_policy" "e2e_codepipeline_iam_policy" {
       "Effect": "Allow",
       "Action": "codebuild:*",
       "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "codedeploy:*",
+      "Resource": "*"
     }
   ]
 }
