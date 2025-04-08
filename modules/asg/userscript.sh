@@ -1,9 +1,21 @@
 #!/bin/bash
 set -euo pipefail
 echo "running scripts"
-##
+
+##update packages ##
 sudo apt update -y
 sudo apt install -y nfs-common
+sudo apt install -y ruby wget
+
+##install codedeploy agent
+sudo su
+wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install
+chmod +x ./install
+./install auto
+systemctl start codedeploy-agent
+systemctl enable codedeploy-agent
+exit
+
 ## mount efs 
 sudo mkdir -p /mnt/linksdb
 sudo apt-get update

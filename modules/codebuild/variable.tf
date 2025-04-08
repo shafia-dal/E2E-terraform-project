@@ -24,3 +24,6 @@ variable "private_subnet" {
 variable "project_name" {
   type = string
 }
+variable "artifect_bucket" {
+  type = string
+}

@@ -10,24 +10,22 @@ module "vpc" {
   alb_sg_id            = module.alb.alb_sg_id
 }
 module "asg" {
-  source              = "../modules/asg"
-  asg_name            = "e2e-project-asg" 
-  vpc_id              = module.vpc.vpc_id
-  ami_id              = "ami-084568db4383264d4"
-  instance_type       = "t3a.large"
-  security_group_id   = module.vpc.security_group_id
-  subnet_id          = module.vpc.private_subnet_id[0]
-  min_size            = 1
-  max_size            = 3
-  instance_name       = "e2e-project-server"
-  target_group_arn = module.alb.target_group_arns
-  rds_endpoint    = module.rds.rds_endpoint
-  rds_password =module.rds.rds_password
-  rds_username = module.rds.rds_username
-  efs_id = module.efs.efs_id
-
+  source            = "../modules/asg"
+  asg_name          = "e2e-project-asg"
+  vpc_id            = module.vpc.vpc_id
+  ami_id            = "ami-084568db4383264d4"
+  instance_type     = "t3a.large"
+  security_group_id = module.vpc.security_group_id
+  subnet_id         = module.vpc.private_subnet_id[0]
+  min_size          = 1
+  max_size          = 3
+  instance_name     = "e2e-project-server"
+  target_group_arn  = module.alb.target_group_arns
+  rds_endpoint      = module.rds.rds_endpoint
+  rds_password      = module.rds.rds_password
+  rds_username      = module.rds.rds_username
+  efs_id            = module.efs.efs_id
 }
-
 module "alb" {
   source             = "../modules/alb"
   vpc_id             = module.vpc.vpc_id
@@ -79,4 +77,21 @@ module "codebuild" {
   project_name = "e2e_codebuild_project"
   vpc_id = module.vpc.vpc_id
   private_subnet = module.vpc.private_subnet_id[0]
+  artifect_bucket = "e2e-artifect-bucket"
+}
+
+module "codedeploy" {
+  source                = "../modules/codedeploy"
+  codedeploy_app        = "nodejs-app-deployment"
+  deployment_group_name = "nodejs-deployment-group"
+  artifect_bucket_arn   = module.codebuild.artifect_bucket_arn
+  autoscaling_groups    = module.asg.asg_name
+}
+module "codepipeline" {
+  source                = "../modules/codepipeline"
+  artifect_bucket       = module.codebuild.artifect_bucket
+  project_name          = module.codebuild.codebuild_project_name
+  codedeploy_app        = module.codedeploy.codedeploy_app
+  deployment_group_name = module.codedeploy.deployment_group_name
+  artifect_bucket_arn   = module.codebuild.artifect_bucket_arn
 }
