@@ -51,7 +51,7 @@ phases:
       - echo "Starting post_build phase..."
       - echo "Tagging Docker image for ECR..."
      
-      - AWS_REGION=$(aws configure get region)
+      - AWS_REGION="us-east-1"
       - IMAGE_REPO_NAME="my-nodejs-repo" # Replace with your ECR repository name
       - IMAGE_TAG="${BUILD_VERSION:-latest}"
       - docker tag my-nodejs-repo:latest 091846656105.dkr.ecr.us-east-1.amazonaws.com/my-nodejs-repo:latest
