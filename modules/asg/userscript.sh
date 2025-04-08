@@ -1,9 +1,21 @@
 #!/bin/bash
 set -euo pipefail
 echo "running scripts"
-##
+
+##update packages ##
 sudo apt update -y
 sudo apt install -y nfs-common
+sudo apt install -y ruby wget
+
+##install codedeploy agent
+sudo su
+wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install
+chmod +x ./install
+./install auto
+systemctl start codedeploy-agent
+systemctl enable codedeploy-agent
+exit
+
 ## mount efs 
 sudo mkdir -p /mnt/bookstack
 sudo apt-get update
@@ -27,10 +39,7 @@ else
   echo "You might need to manually correct /etc/fstab or restore the backup."
 fi
 
-
 ##mysql 
-
-
 if dpkg -s mysql-server > /dev/null 2>&1; then
 echo "MySQL server is installed."
 else
