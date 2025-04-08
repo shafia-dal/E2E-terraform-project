@@ -66,19 +66,19 @@ resource "aws_iam_role" "e2e_codepipeline_role" {
   name = "e2e-project-codepipeline-role"
   
   assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
     {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "codepipeline.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "codepipeline.amazonaws.com"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
     }
-  ]
-}
-EOF
+  EOF
 }
 
 resource "aws_iam_role_policy" "e2e_codepipeline_iam_policy" {

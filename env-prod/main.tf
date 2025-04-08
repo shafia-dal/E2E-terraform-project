@@ -32,11 +32,6 @@ module "alb" {
   public_subnet_ids  = module.vpc.public_subnet_id
   alb_name           = "e2e-project-alb"
   alb_sg             = "alb_sg"
-  source            = "/home/ubuntu/E2E-terraform-project/modules/alb"
-  vpc_id            = module.vpc.vpc_id
-  public_subnet_ids = module.vpc.public_subnet_id
-  alb_name          = "e2e-project-alb"
-  alb_sg            = "alb_sg"
 }
 output "alb_dns" {
   value = module.alb.alb_dns_name
