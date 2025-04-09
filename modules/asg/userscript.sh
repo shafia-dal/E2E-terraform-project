@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -eu
 echo "running scripts"
 
 ##update packages ##
@@ -58,7 +58,7 @@ fi
 
 #db_file.sql
 sudo mkdir -p /mnt/linksdb/db_init
-sudo mv /home/jayesh/E2E-terraform-project/nodejs-app/scripts/db.sql /mnt/linksdb/db_init/
+sudo mv /home/ubuntu/nodejs-app/scripts/db.sql /mnt/linksdb/db_init/
 
 
 ##mysql 
