@@ -16,6 +16,21 @@ systemctl start codedeploy-agent
 systemctl enable codedeploy-agent
 exit
 
+##docker install
+
+
+##Add Docker's official GPG key:
+
+
+sudo apt-get update
+sudo apt install -y docker.io
+sudo usermod -aG docker ubuntu
+sudo systemctl restart docker
+sudo docker run hello-world
+
+
+
+
 ## mount efs 
 sudo mkdir -p /mnt/linksdb
 sudo apt-get update
@@ -24,15 +39,16 @@ git clone https://github.com/aws/efs-utils
  cd efs-utils
  ./build-deb.sh
 sudo apt-get -y install ./build/amazon-efs-utils*deb
-sudo mount -t efs "${efs_id }":/ /mnt/linksdb/
+sudo mount -t efs "${efs_id}":/ /mnt/linksdb/
 sudo cp /etc/fstab /etc/fstab.bak
 echo "Adding EFS mount entry to /etc/fstab"
-echo "${efs_id }":/ /mnt/linksdb efs defaults,_netdev 0 0 | sudo tee -a /etc/fstab
+echo "${efs_id}":/ /mnt/linksdb efs defaults,_netdev 0 0 | sudo tee -a /etc/fstab
 sudo systemctl daemon-reload
 sudo mount -a 
 
 echo "Testing the new fstab entry..."
-if sudo mount -a; then
+if sudo mount -a 
+then
   echo "EFS mount entry added and tested successfully. It will be mounted automatically on next boot."
 else
   echo "Error: Failed to mount with the new fstab entry. Please check /etc/fstab for errors."
@@ -46,7 +62,8 @@ sudo mv /home/jayesh/E2E-terraform-project/nodejs-app/scripts/db.sql /mnt/linksd
 
 
 ##mysql 
-if dpkg -s mysql-server > /dev/null 2>&1; then
+if dpkg -s mysql-server > /dev/null 2>&1 
+then
 echo "MySQL server is installed."
 else
 echo "MySQL server is NOT installed."

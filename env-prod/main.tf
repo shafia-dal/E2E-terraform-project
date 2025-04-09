@@ -27,11 +27,11 @@ module "asg" {
   efs_id            = module.efs.efs_id
 }
 module "alb" {
-  source             = "../modules/alb"
-  vpc_id             = module.vpc.vpc_id
-  public_subnet_ids  = module.vpc.public_subnet_id
-  alb_name           = "e2e-project-alb"
-  alb_sg             = "alb_sg"
+  source            = "../modules/alb"
+  vpc_id            = module.vpc.vpc_id
+  public_subnet_ids = module.vpc.public_subnet_id
+  alb_name          = "e2e-project-alb"
+  alb_sg            = "alb_sg"
 }
 output "alb_dns" {
   value = module.alb.alb_dns_name
@@ -73,10 +73,10 @@ module "elasticache" {
 }
 
 module "codebuild" {
-  source            = "../modules/codebuild"
-  project_name = "e2e_codebuild_project"
-  vpc_id = module.vpc.vpc_id
-  private_subnet = module.vpc.private_subnet_id[0]
+  source          = "../modules/codebuild"
+  project_name    = "e2e_codebuild_project"
+  vpc_id          = module.vpc.vpc_id
+  private_subnet  = module.vpc.private_subnet_id[0]
   artifect_bucket = "e2e-artifect-bucket"
 }
 
