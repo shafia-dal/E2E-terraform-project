@@ -86,3 +86,23 @@ resource "aws_lb_listener" "listener" {
     type             = "forward"
   }
 }
+# resource "aws_lb_listener" "https_listener" {
+#   load_balancer_arn = aws_lb.alb_loadbalancer.arn
+#   port              = 443
+#   protocol          = "HTTPs"
+
+#   default_action {
+#     target_group_arn = aws_lb_target_group.alb-tg.arn
+#     type             = "forward"
+#   }
+# }
+
+#certificate
+# resource "aws_acm_certificate" "cert" {
+#   domain_name       = "example.yourdomain.com"
+#   validation_method = "DNS"
+
+#   tags = {
+#     Environment = "production"
+#   }
+# }

@@ -60,10 +60,9 @@ fi
 
 
 #db_file.sql
-sudo mkdir -p /mnt/linksdb/db_init
-sudo mv /home/ubuntu/nodejs-app/scripts/db.sql /mnt/linksdb/db_init/
-
-
+sudo mkdir -p /mnt/linksdb/db_init/jayesh 
+# sudo mv ./db.sql /mnt/linksdb/db_init/
+touch abc
 ##mysql 
 if dpkg -s mysql-server > /dev/null 2>&1 
 then
@@ -72,7 +71,8 @@ else
 echo "MySQL server is NOT installed."
 fi
 sudo apt-get update -y
-sudo apt-get install mysql-client -y
+sudo apt install mysql-client-core-8.0 -y
+
 if mysql -h "${rds_endpoint}" -u "${rds_username}" -p"${rds_password}" -e "CREATE DATABASE linksdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" 
 then
 echo "linksdb database created successfully on RDS."
@@ -82,6 +82,9 @@ else
 fi
 echo "RDS preparation for linksdb complete."
 
+
+
+
 database_exists=$(mysql -h "${rds_endpoint}" -u "${rds_username}" -p"${rds_password}" -e "SHOW DATABASES LIKE 'linksdb';" | grep 'linksdb')
 
 if [ -z "$database_exists" ]; then
@@ -89,16 +92,16 @@ if [ -z "$database_exists" ]; then
   if mysql -h "${rds_endpoint}" -u "${rds_username}" -p"${rds_password}" -e "CREATE DATABASE linksdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"; then
     echo "Database 'linksdb' created successfully."
     # Now apply the SQL script to create tables
-    if [ -f "/mnt/efs/db_init/db.sql" ]; then
+    if [ -f "./db.sql" ]; then
       echo "Executing SQL script from EFS to create tables..."
-      sudo mysql -h "${rds_endpoint}" -u "${rds_username}" -p"${rds_password}" linksdb < /mnt/efs/db_init/db.sql
+      sudo mysql -h "${rds_endpoint}" -u "${rds_username}" -p"${rds_password}" linksdb < ./db.sql
       if [ $? -eq 0 ]; then
         echo "Database tables created successfully."
       else
         echo "Error creating database tables. Check MySQL logs."
       fi
     else
-      echo "SQL script not found on EFS at /mnt/efs/db_init/db.sql"
+      echo "SQL script not found on EFS at ./db.sql"
     fi
   else
     echo "Error creating database 'linksdb'. Check MySQL logs."

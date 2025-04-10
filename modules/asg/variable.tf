@@ -33,10 +33,10 @@ variable "key_name" {
 variable "target_group_arn" {
   type = string
 }
-variable "aws_iam_role"{
-  type = string
-  default = "e2e_instance_profile"
-}
+# variable "aws_iam_role"{
+#   type = string
+#   default = "e2e-project-asg-role"
+# }
 
 ##rds variables 
 variable "efs_id" {
