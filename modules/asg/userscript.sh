@@ -8,13 +8,12 @@ sudo apt install -y nfs-common
 sudo apt install -y ruby wget
 
 ##install codedeploy agent
-sudo su
+
 wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install
 chmod +x ./install
 ./install auto
 systemctl start codedeploy-agent
 systemctl enable codedeploy-agent
-exit
 
 ##docker install
 
@@ -22,7 +21,7 @@ exit
 ##Add Docker's official GPG key:
 
 
-sudo apt-get update
+sudo apt-get update -y
 sudo apt install -y docker.io
 sudo usermod -aG docker ubuntu
 sudo systemctl restart docker
@@ -33,7 +32,7 @@ sudo docker run hello-world
 
 ## mount efs 
 sudo mkdir -p /mnt/linksdb
-sudo apt-get update
+sudo apt-get update -y
 sudo apt-get -y install git binutils rustc cargo pkg-config libssl-dev gettext
 git clone https://github.com/aws/efs-utils
  cd efs-utils
