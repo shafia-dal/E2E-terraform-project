@@ -1,31 +1,34 @@
 ######## S3 ##############
-resource "aws_s3_bucket" "e2e_artifect" {
+# resource "aws_s3_bucket" "e2e_artifect" {
+#   bucket = var.artifect_bucket
+#   # policy = file("bucket-policy.json")
+#   policy = <<EOF
+#   {
+#     "Version": "2012-10-17",
+#     "Statement": [
+#         {
+#             "Sid": "AllowCodeBuildToAccessS3",
+#             "Effect": "Allow",
+#             "Principal": {
+#                 "AWS": "arn:aws:iam::091846656105:role/e2e_codebuild_role"
+#             },
+#             "Action": [
+#                 "s3:GetObject",
+#                 "s3:PutObject",
+#                 "s3:ListBucket",
+#                 "s3:GetObjectVersion"
+#             ],
+#             "Resource": [
+#                 "arn:aws:s3:::e2e-artifect-bucket",
+#                 "arn:aws:s3:::e2e-artifect-bucket/*"
+#             ]
+#         }
+#     ]
+# }
+# EOF
+# }
+data "aws_s3_bucket" "e2e_artifect" {
   bucket = var.artifect_bucket
-  # policy = file("bucket-policy.json")
-  policy = <<EOF
-  {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "AllowCodeBuildToAccessS3",
-            "Effect": "Allow",
-            "Principal": {
-                "AWS": "arn:aws:iam::091846656105:role/e2e_codebuild_role"
-            },
-            "Action": [
-                "s3:GetObject",
-                "s3:PutObject",
-                "s3:ListBucket",
-                "s3:GetObjectVersion"
-            ],
-            "Resource": [
-                "arn:aws:s3:::e2e-artifect-bucket",
-                "arn:aws:s3:::e2e-artifect-bucket/*"
-            ]
-        }
-    ]
-}
-EOF
 }
 
 ############# codebuild iam role ##########
@@ -147,7 +150,7 @@ resource "aws_codebuild_project" "e2e_codebuild_project" {
 
   cache {
     type     = "S3"
-    location = "${aws_s3_bucket.e2e_artifect.bucket}"
+    location = "${data.aws_s3_bucket.e2e_artifect.bucket}"
   }
 
   environment {

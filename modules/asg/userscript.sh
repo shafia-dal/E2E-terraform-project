@@ -17,17 +17,21 @@ systemctl enable codedeploy-agent
 
 ##docker install
 
-
-##Add Docker's official GPG key:
-
-
 sudo apt-get update -y
 sudo apt install -y docker.io
 sudo usermod -aG docker ubuntu
 sudo systemctl restart docker
 sudo docker run hello-world
 
-
+##aws cli
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+aws --version
+rm awscliv2.zip
+rm -rf aws
+echo "AWS CLI installed successfully!"
+echo "Verify by running: aws --version"
 
 
 ## mount efs 
