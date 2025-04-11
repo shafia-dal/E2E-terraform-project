@@ -98,11 +98,14 @@ resource "aws_lb_listener" "listener" {
 # }
 
 #certificate
-# resource "aws_acm_certificate" "cert" {
-#   domain_name       = "example.yourdomain.com"
+# resource "aws_acm_certificate" "e2e_cert" {
+#   domain_name       = "nodejs.operisoft.space"
 #   validation_method = "DNS"
 
 #   tags = {
 #     Environment = "production"
 #   }
+#   lifecycle {
+#       create_before_destroy = true
+#     }
 # }

@@ -73,7 +73,7 @@ fi
 sudo apt-get update -y
 sudo apt install mysql-client-core-8.0 -y
 
-if mysql -h "${rds_endpoint}" -u "${rds_username}" -p"${rds_password}" -e "CREATE DATABASE linksdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" 
+if mysql -h ${rds_endpoint} -u ${rds_username} -p${rds_password} -e "CREATE DATABASE linksdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" 
 then
 echo "linksdb database created successfully on RDS."
 else
@@ -85,16 +85,16 @@ echo "RDS preparation for linksdb complete."
 
 
 
-database_exists=$(mysql -h "${rds_endpoint}" -u "${rds_username}" -p"${rds_password}" -e "SHOW DATABASES LIKE 'linksdb';" | grep 'linksdb')
+database_exists=$(mysql -h ${rds_endpoint} -u ${rds_username} -p${rds_password} -e "SHOW DATABASES LIKE 'linksdb';" | grep 'linksdb')
 
 if [ -z "$database_exists" ]; then
   echo "Database 'linksdb' does not exist. Creating it..."
-  if mysql -h "${rds_endpoint}" -u "${rds_username}" -p"${rds_password}" -e "CREATE DATABASE linksdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"; then
+  if mysql -h ${rds_endpoint} -u ${rds_username} -p${rds_password} -e "CREATE DATABASE linksdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"; then
     echo "Database 'linksdb' created successfully."
     # Now apply the SQL script to create tables
     if [ -f "./db.sql" ]; then
       echo "Executing SQL script from EFS to create tables..."
-      sudo mysql -h "${rds_endpoint}" -u "${rds_username}" -p"${rds_password}" linksdb < ./db.sql
+      sudo mysql -h ${rds_endpoint} -u ${rds_username} -p${rds_password} linksdb < ./db.sql
       if [ $? -eq 0 ]; then
         echo "Database tables created successfully."
       else
