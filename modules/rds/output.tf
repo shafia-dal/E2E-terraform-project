@@ -10,3 +10,8 @@ output "rds_password" {
   value = aws_db_instance.rds.password
   description = "rds pass"
 }
+
+output "rds_hostname" {
+  value       = aws_db_instance.rds.address
+  description = "RDS instance hostname"
+}
