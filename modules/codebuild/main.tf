@@ -32,117 +32,120 @@ data "aws_s3_bucket" "e2e_artifect" {
 }
 
 ############# codebuild iam role ##########
-resource "aws_iam_role" "e2e_codebuild_role" {
-  name = "e2e_codebuild_role"
+# resource "aws_iam_role" "e2e_codebuild_role" {
+#   name = "e2e_codebuild_role"
 
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "codebuild.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-EOF
-}
+#   assume_role_policy = <<EOF
+# {
+#   "Version": "2012-10-17",
+#   "Statement": [
+#     {
+#       "Effect": "Allow",
+#       "Principal": {
+#         "Service": "codebuild.amazonaws.com"
+#       },
+#       "Action": "sts:AssumeRole"
+#     }
+#   ]
+# }
+# EOF
+# }
 
-resource "aws_iam_role_policy" "e2e_codebuild_iam_policy" {
-  role = "${aws_iam_role.e2e_codebuild_role.name}"
+# resource "aws_iam_role_policy" "e2e_codebuild_iam_policy" {
+#   role = "${aws_iam_role.e2e_codebuild_role.name}"
 
-  policy = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Resource": [
-        "arn:aws:logs:us-east-1:091846656105:log-group:/aws/codebuild/e2e_codebuild_project",
-        "arn:aws:logs:us-east-1:091846656105:log-group:/aws/codebuild/e2e_codebuild_project:*"
-        ],
-      "Action": [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Resource": [
-          "arn:aws:s3:::codepipeline-us-east-1-*"
-      ],
-      "Action": [
-          "s3:PutObject",
-          "s3:GetObject",
-          "s3:GetObjectVersion",
-          "s3:GetBucketAcl",
-          "s3:GetBucketLocation"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-          "codebuild:StartBuild",
-          "codebuild:CreateReportGroup",
-          "codebuild:CreateReport",
-          "codebuild:UpdateReport",
-          "codebuild:BatchPutTestCases",
-          "codebuild:BatchPutCodeCoverages"
-      ],
-      "Resource": [
-          "arn:aws:codebuild:us-east-1:091846656105:report-group/e2e_codebuild_project-*"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "ec2:CreateNetworkInterface",
-        "ec2:DescribeDhcpOptions",
-        "ec2:DescribeNetworkInterfaces",
-        "ec2:DeleteNetworkInterface",
-        "ec2:DescribeSubnets",
-        "ec2:DescribeSecurityGroups",
-        "ec2:DescribeVpcs"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-          "ecr:GetAuthorizationToken",
-          "ecr:BatchCheckLayerAvailability",
-          "ecr:GetDownloadUrlForLayer",
-          "ecr:GetRepositoryPolicy",
-          "ecr:DescribeRepositories",
-          "ecr:ListImages",
-          "ecr:DescribeImages",
-          "ecr:BatchGetImage",
-          "ecr:GetLifecyclePolicy",
-          "ecr:GetLifecyclePolicyPreview",
-          "ecr:ListTagsForResource",
-          "ecr:DescribeImageScanFindings",
-          "ecr:InitiateLayerUpload",
-          "ecr:UploadLayerPart",
-          "ecr:CompleteLayerUpload",
-          "ecr:PutImage"
-      ],
-      "Resource": "*"
-    }
-  ]
+#   policy = <<POLICY
+# {
+#   "Version": "2012-10-17",
+#   "Statement": [
+#     {
+#       "Effect": "Allow",
+#       "Resource": [
+#         "arn:aws:logs:us-east-1:091846656105:log-group:/aws/codebuild/e2e_codebuild_project",
+#         "arn:aws:logs:us-east-1:091846656105:log-group:/aws/codebuild/e2e_codebuild_project:*"
+#         ],
+#       "Action": [
+#           "logs:CreateLogGroup",
+#           "logs:CreateLogStream",
+#           "logs:PutLogEvents"
+#       ]
+#     },
+#     {
+#       "Effect": "Allow",
+#       "Resource": [
+#           "arn:aws:s3:::codepipeline-us-east-1-*"
+#       ],
+#       "Action": [
+#           "s3:PutObject",
+#           "s3:GetObject",
+#           "s3:GetObjectVersion",
+#           "s3:GetBucketAcl",
+#           "s3:GetBucketLocation"
+#       ]
+#     },
+#     {
+#       "Effect": "Allow",
+#       "Action": [
+#           "codebuild:StartBuild",
+#           "codebuild:CreateReportGroup",
+#           "codebuild:CreateReport",
+#           "codebuild:UpdateReport",
+#           "codebuild:BatchPutTestCases",
+#           "codebuild:BatchPutCodeCoverages"
+#       ],
+#       "Resource": [
+#           "arn:aws:codebuild:us-east-1:091846656105:report-group/e2e_codebuild_project-*"
+#       ]
+#     },
+#     {
+#       "Effect": "Allow",
+#       "Action": [
+#         "ec2:CreateNetworkInterface",
+#         "ec2:DescribeDhcpOptions",
+#         "ec2:DescribeNetworkInterfaces",
+#         "ec2:DeleteNetworkInterface",
+#         "ec2:DescribeSubnets",
+#         "ec2:DescribeSecurityGroups",
+#         "ec2:DescribeVpcs"
+#       ],
+#       "Resource": "*"
+#     },
+#     {
+#       "Effect": "Allow",
+#       "Action": [
+#           "ecr:GetAuthorizationToken",
+#           "ecr:BatchCheckLayerAvailability",
+#           "ecr:GetDownloadUrlForLayer",
+#           "ecr:GetRepositoryPolicy",
+#           "ecr:DescribeRepositories",
+#           "ecr:ListImages",
+#           "ecr:DescribeImages",
+#           "ecr:BatchGetImage",
+#           "ecr:GetLifecyclePolicy",
+#           "ecr:GetLifecyclePolicyPreview",
+#           "ecr:ListTagsForResource",
+#           "ecr:DescribeImageScanFindings",
+#           "ecr:InitiateLayerUpload",
+#           "ecr:UploadLayerPart",
+#           "ecr:CompleteLayerUpload",
+#           "ecr:PutImage"
+#       ],
+#       "Resource": "*"
+#     }
+#   ]
+# }
+# POLICY
+# }
+data "aws_iam_role" "codebuild_role" {
+  name = "e2e-codebuild-role"
+  # arn = "arn:aws:iam::091846656105:role/codedeploy-e2e-role"
 }
-POLICY
-}
-
 ######## build project ###############
 resource "aws_codebuild_project" "e2e_codebuild_project" {
   name          = var.project_name
   description   = "test_codebuild_project"
   # build_timeout = "5"
-  service_role  = "${aws_iam_role.e2e_codebuild_role.arn}"
+  service_role  = data.aws_iam_role.codebuild_role.arn
 
   artifacts {
     type = "NO_ARTIFACTS"

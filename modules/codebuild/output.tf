@@ -5,7 +5,7 @@ output "codebuild_project_name" {
 
 output "codebuild_iam_role_arn" {
   description = "The ARN of the IAM role used by CodeBuild"
-  value       = aws_iam_role.e2e_codebuild_role.arn
+  value       = data.aws_iam_role.codebuild_role.arn
 }
 output "artifect_bucket" {
   description = "The S3 bucket where CodeBuild artifacts are stored"

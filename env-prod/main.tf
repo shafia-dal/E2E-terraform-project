@@ -25,6 +25,12 @@ module "asg" {
   rds_password      = module.rds.rds_password
   rds_username      = module.rds.rds_username
   efs_id            = module.efs.efs_id
+  depends_on = [
+    module.vpc,
+    module.rds,
+    module.efs,
+    module.alb
+  ]
 }
 module "alb" {
   source            = "../modules/alb"
@@ -49,6 +55,7 @@ module "rds" {
   db_password       = "password123"
   allocated_storage = 20
   security_group_id = module.vpc.security_group_id
+ 
 
 }
 module "efs" {

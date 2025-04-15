@@ -146,7 +146,7 @@ resource "aws_security_group_rule" "ingress" {
   type              = "ingress"
   from_port         = 0
   to_port           = 65535
-  cidr_blocks       = ["0.0.0.0/0"]
+  
   protocol          = "tcp"
   
   security_group_id = aws_security_group.e2e-server-sg.id
