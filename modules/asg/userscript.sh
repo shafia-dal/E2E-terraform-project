@@ -1,6 +1,11 @@
 #!/bin/bash
-set -eu
 echo "running scripts"
+
+# Define the output file
+output_file="script_output.log"
+
+# Redirect all standard output and standard error to the output file
+exec > >(tee -a "$output_file") 2>&1
 
 ##update packages ##
 sudo apt update -y
@@ -9,7 +14,7 @@ sudo apt install -y ruby wget
 
 ##install codedeploy agent
 
-wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install
+wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install 
 chmod +x ./install
 ./install auto
 systemctl start codedeploy-agent
@@ -17,20 +22,24 @@ systemctl enable codedeploy-agent
 
 ##docker install
 
-
-##Add Docker's official GPG key:
-
-
 sudo apt-get update -y
 sudo apt install -y docker.io
 sudo usermod -aG docker ubuntu
 sudo systemctl restart docker
 sudo docker run hello-world
 
+##aws cli
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+aws --version
+rm awscliv2.zip
+rm -rf aws
+echo "AWS CLI installed successfully!"
+echo "Verify by running: aws --version"
 
 
-
-## mount efs 
+## mount efs
 sudo mkdir -p /mnt/linksdb
 sudo apt-get update -y
 sudo apt-get -y install git binutils rustc cargo pkg-config libssl-dev gettext
@@ -38,15 +47,15 @@ git clone https://github.com/aws/efs-utils
  cd efs-utils
  ./build-deb.sh
 sudo apt-get -y install ./build/amazon-efs-utils*deb
-sudo mount -t efs "${efs_id}":/ /mnt/linksdb/
+sudo mount -t efs ${efs_id}:/ /mnt/linksdb/
 sudo cp /etc/fstab /etc/fstab.bak
 echo "Adding EFS mount entry to /etc/fstab"
-echo "${efs_id}":/ /mnt/linksdb efs defaults,_netdev 0 0 | sudo tee -a /etc/fstab
+echo ${efs_id}:/ /mnt/linksdb efs defaults,_netdev 0 0 | sudo tee -a /etc/fstab
 sudo systemctl daemon-reload
-sudo mount -a 
+sudo mount -a
 
 echo "Testing the new fstab entry..."
-if sudo mount -a 
+if sudo mount -a
 then
   echo "EFS mount entry added and tested successfully. It will be mounted automatically on next boot."
 else
@@ -60,46 +69,43 @@ sudo mkdir -p /mnt/linksdb/db_init
 sudo mv /home/ubuntu/nodejs-app/scripts/db.sql /mnt/linksdb/db_init/
 
 
-##mysql 
-if dpkg -s mysql-server > /dev/null 2>&1 
-then
-echo "MySQL server is installed."
-else
-echo "MySQL server is NOT installed."
-fi
+#tables file sql
+aws s3 cp s3://e2e-artifect-bucket/db.sql /tmp/downloaded_db.sql
+sudo mkdir -p /tmp/
+S3_BUCKET_NAME="e2e-artifect-bucket" # Replace with your S3 bucket name
+SCRIPT_KEY="db.sql"   # Replace with the path to your script in the bucket
+LOCAL_SCRIPT_PATH="/tmp/db.sql"
+aws s3 cp s3://$S3_BUCKET_NAME/$SCRIPT_KEY $LOCAL_SCRIPT_PATH
+
+
+#db_file.sql
 sudo apt-get update -y
-sudo apt-get install mysql-client -y
-if mysql -h "${rds_endpoint}" -u "${rds_username}" -p"${rds_password}" -e "CREATE DATABASE linksdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" 
-then
-echo "linksdb database created successfully on RDS."
-else
-  echo "Error: Failed to create database linksdb on RDS. Check the output above for details."
-  exit 1
+sudo apt install -y mysql-client-core-8.0
+rds_hostname=$(echo ${rds_endpoint} | cut -d':' -f1)
+# Check if the database exists
+
+
+DATABASE_NAME=linksdb
+
+db_path=/tmp/downloaded_db.sql
+echo "Checking if database $DATABASE_NAME exists on RDS..."
+database_exists=$(mysql -h $rds_hostname -u ${rds_username} -p${rds_password} -e "SHOW DATABASES LIKE $DATABASE_NAME;" | grep $DATABASE_NAME)
+
+if [ -z $database_exists ]; then
+  echo "Database "$DATABASE_NAME" does not exist. Creating it..."
 fi
-echo "RDS preparation for linksdb complete."
+if mysql -h $rds_hostname -u ${rds_username} -p${rds_password} -e "CREATE DATABASE $DATABASE_NAME CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"; then
+  echo "Database '$DATABASE_NAME' created successfully."
+fi
 
-database_exists=$(mysql -h "${rds_endpoint}" -u "${rds_username}" -p"${rds_password}" -e "SHOW DATABASES LIKE 'linksdb';" | grep 'linksdb')
-
-if [ -z "$database_exists" ]; then
-  echo "Database 'linksdb' does not exist. Creating it..."
-  if mysql -h "${rds_endpoint}" -u "${rds_username}" -p"${rds_password}" -e "CREATE DATABASE linksdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"; then
-    echo "Database 'linksdb' created successfully."
-    # Now apply the SQL script to create tables
-    if [ -f "/mnt/efs/db_init/db.sql" ]; then
-      echo "Executing SQL script from EFS to create tables..."
-      sudo mysql -h "${rds_endpoint}" -u "${rds_username}" -p"${rds_password}" linksdb < /mnt/efs/db_init/db.sql
-      if [ $? -eq 0 ]; then
-        echo "Database tables created successfully."
-      else
-        echo "Error creating database tables. Check MySQL logs."
-      fi
-    else
-      echo "SQL script not found on EFS at /mnt/efs/db_init/db.sql"
-    fi
+  echo "Executing SQL script from $db_path to create tables..."
+  sudo mysql -h $rds_hostname -u ${rds_username} -p${rds_password} $DATABASE_NAME < $db_path
+  if [ $? -eq 0 ]; then
+    echo "Database tables created successfully."
   else
-    echo "Error creating database 'linksdb'. Check MySQL logs."
+    echo "Error creating database tables. Check MySQL logs."
   fi
 else
-  echo "Database 'linksdb' already exists. Skipping creation."
-  # You can add logic here to perform migrations or other actions if the DB exists
+  echo "SQL script not found at $db_path. Please check the path."
 fi
+

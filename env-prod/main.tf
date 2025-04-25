@@ -25,13 +25,19 @@ module "asg" {
   rds_password      = module.rds.rds_password
   rds_username      = module.rds.rds_username
   efs_id            = module.efs.efs_id
+  depends_on = [
+    module.vpc,
+    module.rds,
+    module.efs,
+    module.alb
+  ]
 }
 module "alb" {
-  source             = "../modules/alb"
-  vpc_id             = module.vpc.vpc_id
-  public_subnet_ids  = module.vpc.public_subnet_id
-  alb_name           = "e2e-project-alb"
-  alb_sg             = "alb_sg"
+  source            = "../modules/alb"
+  vpc_id            = module.vpc.vpc_id
+  public_subnet_ids = module.vpc.public_subnet_id
+  alb_name          = "e2e-project-alb"
+  alb_sg            = "alb_sg"
 }
 output "alb_dns" {
   value = module.alb.alb_dns_name
@@ -49,6 +55,7 @@ module "rds" {
   db_password       = "password123"
   allocated_storage = 20
   security_group_id = module.vpc.security_group_id
+ 
 
 }
 module "efs" {
@@ -90,9 +97,9 @@ module "codedeploy" {
 module "codepipeline" {
   source                = "../modules/codepipeline"
   artifect_bucket       = module.codebuild.artifect_bucket
+  artifect_bucket_arn = module.codebuild.artifect_bucket_arn
   project_name          = module.codebuild.codebuild_project_name
   codedeploy_app        = module.codedeploy.codedeploy_app
   deployment_group_name = module.codedeploy.deployment_group_name
-  artifect_bucket_arn   = module.codebuild.artifect_bucket_arn
   github_connection_arn = "arn:aws:codeconnections:us-east-1:091846656105:connection/cde9ea26-bd2d-4fad-b1e8-24f71fb19bac"
 }

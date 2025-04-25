@@ -40,7 +40,7 @@ resource "aws_security_group" "rds_sg" {
   }
 
   tags = {
-    Name = "alb-group"
+    Name = "rds_sg"
     Environment = "Development"
   }
 }
@@ -50,7 +50,6 @@ resource "aws_security_group_rule" "ingress" {
   from_port         = 3306
   to_port           = 3306
   protocol          = "tcp"
-  
   security_group_id = aws_security_group.rds_sg.id
   source_security_group_id = var.security_group_id  #ec2 security group
 }
@@ -80,5 +79,7 @@ resource "aws_db_instance" "rds" {
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   publicly_accessible    = false
   skip_final_snapshot    = true
+  
+
   
 }
